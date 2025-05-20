@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thaakireen - Manage Users</title>
+  <style>
+     body {
+      margin: 0;
+      padding-bottom: 60px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f9f7;
+    }
+
+    header, footer {
+      background-color: #387a5f;
+      color: #fff;
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    header {
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer {
+      bottom: 0;
+      text-align: center;
+    }
+
+    #logo img {
+      max-height: 50px;
+    }
+
+    #menu-container ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-right: 50px;
+      padding: 0;
+    }
+
+    #menu-container a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 70px 0;
+    }
+
+    .container {
+      margin-top: 400px;
+      max-width: 1100px;
+      margin: 0 auto 120px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .button-row {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #d0e7de;
+    }
+
+    td.name-cell,
+    td.role-cell {
+      text-align: left;
+    }
+
+    input[type="text"], input[type="email"], select, button {
+      padding: 6px;
+      font-size: 15px;
+      margin: 5px 0;
+    }
+
+    #manualUserForm {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    #manualUserForm input,
+    #manualUserForm select {
+      width: 98%;
+      max-width: 100%;
+      margin: 5px 0;
+      padding: 6px;
+      font-size: 15px;
+      box-sizing: border-box;
+      display: block;
+    }
+
+    #manualUserForm label {
+      display: inline-block;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="logo">
+    <img src="uploads/Logo.png" alt="Thaakireen Logo" />
+  </div>
+  <div id="menu-container">
+    <ul>
+      <li><a href="Homepage.html">Home</a></li>
+      <li><a href="Profile.html">My Profile</a></li>
+      <li><a href="Login.html">Logout</a></li>
+    </ul>
+  </div>
+</header>
+
+
+<div class="container">
+  <h1>Manage Users</h1>
+  <div class="button-row">
+    <button onclick="toggleUserForm()">+ Add User</button>
+  </div>
+
+  <div id="manualUserForm">
+    <h3>Manually Add User</h3>
+    <input type="text" id="manualFirstName" placeholder="First Name" required />
+    <input type="text" id="manualLastName" placeholder="Last Name" required />
+    <select id="manualTitle" required>
+      <option value="">-- Select Title --</option>
+      <option value="Sister">Sister</option>
+      <option value="Shaykh">Shaykh</option>
+      <option value="Mufti">Mufti</option>
+      <option value="Haafidh">Haafidh</option>
+      <option value="Maulana">Maulana</option>
+      <option value="Aapa">Aapa</option>
+      <option value="Brother">Brother</option>
+    </select>
+    <input type="email" id="manualEmail" placeholder="Email" required />
+    <input type="text" id="manualPhone" placeholder="Phone (optional)" />
+
+    <div style="margin-top: 10px;">
+      <label><input type="checkbox" id="manualIsTeacher"> Teacher</label>
+      <label><input type="checkbox" id="manualIsAdmin"> Admin</label>
+      <label><input type="checkbox" id="manualIsExaminer"> Examiner</label>
+      <label><input type="checkbox" id="manualIsPrincipal"> Principal</label>
+      <label><input type="checkbox" id="manualIsCoordinator"> Coordinator</label>
+      <label><input type="checkbox" id="manualIsSupervisor"> Supervisor</label>
+      <label><input type="checkbox" id="manualIsVolunteer"> Volunteer</label>
+      <label><input type="checkbox" id="manualIsSummerCampTeacher"> Summer Camp Teacher</label>
+    </div>
+
+    <br>
+    <button onclick="addManualUser()">Submit</button>
+  </div>
+
+  <table id="userTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Title</th>
+        <th>Email</th>
+        <th>Roles</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Users will be loaded here -->
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  <p>&copy; 2024 Thaakireen. All rights reserved.</p>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("get_approved_users.php")
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.querySelector("#userTable tbody");
+      tbody.innerHTML = "";
+
+      data.users.forEach(user => {
+        const row = document.createElement("tr");
+
+        const nameInputs = `
+          <input type="text" id="firstName_${user.id}" value="${user.firstName}">
+          <input type="text" id="lastName_${user.id}" value="${user.lastName}">
+        `;
+
+        const titleOptions = ["", "Sister", "Shaykh", "Mufti", "Haafidh", "Maulana", "Aapa", "Brother"]
+          .map(opt => `<option value="${opt}" ${user.title === opt ? "selected" : ""}>${opt || '--'}</option>`)
+          .join("");
+
+        const titleInput = `<select class="title-select-small" id="title_${user.id}">${titleOptions}</select>`;
+
+        const emailInput = `<input type="email" id="email_${user.id}" value="${user.email}">`;
+
+        const roles = ['Admin', 'Teacher', 'Examiner', 'Principal', 'Coordinator', 'Supervisor', 'Volunteer', 'SummerCampTeacher'];
+        const roleCheckboxes = roles.map(role => {
+          const dbKey = `is${role}`;
+          const checked = user[dbKey] == 1 ? 'checked' : '';
+          return `<label><input type="checkbox" name="${dbKey}_${user.id}" ${checked}> ${role.replace('SummerCampTeacher', 'Summer Camp Teacher')}</label><br>`;
+        }).join("");
+
+        row.innerHTML = `
+          <td class="name-cell">${nameInputs}</td>
+          <td>${titleInput}</td>
+          <td>${emailInput}</td>
+          <td class="role-cell">${roleCheckboxes}</td>
+          <td>
+            <button onclick="updateUser(${user.id})">Update</button><br><br>
+            <button onclick="deleteUser(${user.id})" style="color:red;">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    });
+});
+
+function toggleUserForm() {
+  const form = document.getElementById("manualUserForm");
+  form.style.display = form.style.display === "none" ? "block" : "none";
+}
+
+function addManualUser() {
+  const user = {
+    firstName: document.getElementById("manualFirstName").value.trim(),
+    lastName: document.getElementById("manualLastName").value.trim(),
+    email: document.getElementById("manualEmail").value.trim(),
+    phone: document.getElementById("manualPhone").value.trim(),
+    isTeacher: document.getElementById("manualIsTeacher").checked ? 1 : 0,
+    isAdmin: document.getElementById("manualIsAdmin").checked ? 1 : 0,
+    isExaminer: document.getElementById("manualIsExaminer").checked ? 1 : 0,
+    isPrincipal: document.getElementById("manualIsPrincipal").checked ? 1 : 0,
+    isCoordinator: document.getElementById("manualIsCoordinator").checked ? 1 : 0,
+    isSupervisor: document.getElementById("manualIsSupervisor").checked ? 1 : 0,
+    isVolunteer: document.getElementById("manualIsVolunteer").checked ? 1 : 0,
+    isSummerCampTeacher: document.getElementById("manualIsSummerCampTeacher").checked ? 1 : 0
+  };
+
+  if (!user.firstName || !user.lastName || !user.email) {
+    alert("First name, last name, and email are required.");
+    return;
+  }
+
+  fetch("add_manual_user.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(user)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("User added successfully.");
+      location.reload();
+    } else {
+      alert("Add failed: " + data.message);
+    }
+  });
+}
+
+function updateUser(userId) {
+  const updates = {
+    userId,
+    firstName: document.getElementById(`firstName_${userId}`).value,
+    lastName: document.getElementById(`lastName_${userId}`).value,
+    email: document.getElementById(`email_${userId}`).value,
+    title: document.getElementById(`title_${userId}`).value // ✅ added support for title
+  };
+
+  const roles = ['isAdmin', 'isTeacher', 'isExaminer', 'isPrincipal', 'isCoordinator', 'isSupervisor', 'isVolunteer', 'isSummerCampTeacher'];
+  roles.forEach(role => {
+    const checkbox = document.querySelector(`[name="${role}_${userId}"]`);
+    updates[role] = checkbox && checkbox.checked ? 1 : 0;
+  });
+
+  fetch("update_user_roles.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updates)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("User updated successfully.");
+    } else {
+      alert("Update failed: " + data.message);
+    }
+  });
+}
+
+
+function deleteUser(userId) {
+  if (!confirm("Are you sure you want to delete this user?")) return;
+
+  fetch("delete_user.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("User deleted.");
+      location.reload();
+    } else {
+      alert("Deletion failed: " + data.message);
+    }
+  });
+}
+</script>
+
+</body>
+</html>

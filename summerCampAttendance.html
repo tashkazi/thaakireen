@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🌞 Summer Camp Attendance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+  body {
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(to bottom right, #fdfdfd, #e3f4f1);
+      padding-bottom: 60px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .bubble, .icon-deco {
+      position: fixed;
+      top: -50px;
+      width: 25px;
+      height: 25px;
+      font-size: 24px;
+      z-index: 0;
+      opacity: 0.7;
+      animation: floatIcons linear infinite;
+    }
+
+    @keyframes floatIcons {
+      0% { transform: translateY(0) rotate(0); }
+      50% { transform: translateY(-20px) rotate(180deg); }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+
+    header {
+      background-color: #6db3a0;
+      color: #fffbe6;
+      padding: 20px 40px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      position: relative;
+    }
+
+    .back-button {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      background-color: #457e73;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .back-button:hover {
+      background-color: #355f57;
+    }
+
+    .container {
+      padding: 30px 20px;
+      max-width: 1100px;
+      margin: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    h2 {
+      text-align: center;
+      color: #457e73;
+      margin-bottom: 20px;
+    }
+
+    #teacherFilterSection {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      background-color: #ffffff;
+      border-collapse: collapse;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.07);
+    }
+
+    th, td {
+      padding: 14px;
+      border: 1px solid #d8f2ed;
+      text-align: center;
+    }
+
+    th {
+      background-color: #d8f2ed;
+      color: #457e73;
+    }
+
+    td:first-child {
+      text-align: left;
+      padding-left: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    select {
+      border: 1px solid #cce7e1;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 14px;
+      background-color: #f8fdfa;
+    }
+
+    button.save {
+      margin-top: 30px;
+      background-color: #6db3a0;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    button.save:hover {
+      transform: scale(1.05);
+      background-color: #5aa693;
+    }
+
+    footer {
+      text-align: center;
+      padding: 12px;
+      background-color: #6db3a0;
+      color: #fff;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+    }
+
+    .access-denied {
+      text-align: center;
+      margin-top: 100px;
+      font-size: 22px;
+      color: red;
+    }
+
+    .floating-icon {
+      position: absolute;
+      font-size: 28px;
+      pointer-events: none;
+      animation: float 6s ease-in-out infinite;
+      opacity: 0.5;
+    }
+
+    .spin { animation: spin 10s linear infinite; }
+    .bounce { animation: bounce 3s ease-in-out infinite; }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="back-button" href="Homepage.html">&larr; Back</a>
+    🌞 Summer Camp Attendance
+  </header>
+
+  <!-- Fun floating cartoon elements -->
+  <span class="bubble icon-deco" style="left: 5%; animation-duration: 10s;">🦋</span>
+  <span class="bubble icon-deco" style="left: 15%; animation-duration: 12s;">❄️</span>
+  <span class="bubble icon-deco" style="left: 25%; animation-duration: 9s;">🌺</span>
+  <span class="bubble icon-deco" style="left: 35%; animation-duration: 11s;">🌟</span>
+  <span class="bubble icon-deco" style="left: 45%; animation-duration: 13s;">🪴</span>
+  <span class="bubble icon-deco" style="left: 55%; animation-duration: 14s;">🦮</span>
+  <span class="bubble icon-deco" style="left: 65%; animation-duration: 10s;">🌸</span>
+  <span class="bubble icon-deco" style="left: 75%; animation-duration: 12s;">✨</span>
+  <span class="bubble icon-deco" style="left: 85%; animation-duration: 8s;">🌈</span>
+  <span class="bubble icon-deco" style="left: 95%; animation-duration: 9s;">🚀</span>
+
+  <div class="container">
+    <div id="teacherFilterSection">
+      <label for="teacherSelect"><strong>Select Teacher:</strong></label>
+      <select id="teacherSelect"></select>
+      <div id="summaryBox" style="text-align:center; margin-top:20px; font-weight:bold; color:#457e73;"></div>
+
+    </div>
+
+    <h2>Week of <input type="date" id="weekSelect" /></h2>
+
+    <table>
+      <thead>
+        <tr id="attendanceHeaderRow"></tr>
+      </thead>
+      <tbody id="attendanceBody"></tbody>
+    </table>
+
+    <button class="save" id="saveAttendanceBtn">📂 Save Attendance</button>
+    <div id="denied" class="access-denied" style="display: none;">
+      ❌ You do not have access to Summer Camp Attendance.
+    </div>
+  </div>
+
+  <footer>© 2024 Thaakireen Summer Camp • Made with 💚 & Wonder</footer>
+
+  
+
+  <script>
+    let isAdmin = false;
+    let currentUserId = null;
+    let students = [];
+
+    async function checkUserRole() {
+      const res = await fetch("check_user_role.php");
+      const data = await res.json();
+      isAdmin = data.isAdmin;
+      currentUserId = data.summerCampTeacherId;
+
+      if (!data.isSummerCampTeacher && !data.isAdmin) {
+        document.querySelector(".container").style.display = "none";
+        document.getElementById("denied").style.display = "block";
+      }
+
+      if (isAdmin) {
+        document.getElementById("teacherFilterSection").style.display = "block";
+        await loadDropdownData();
+      }
+    }
+
+    async function loadDropdownData() {
+      const res = await fetch("fetch_dropdowns.php");
+      const data = await res.json();
+      const teacherSelect = document.getElementById("teacherSelect");
+      teacherSelect.innerHTML = '<option value="">-- Select --</option>';
+      (data.summerCampTeachers || []).forEach(t => {
+        const option = document.createElement("option");
+        option.value = t.id;
+        option.textContent = t.name;
+        teacherSelect.appendChild(option);
+      });
+
+      teacherSelect.addEventListener("change", () => {
+        const teacherId = teacherSelect.value;
+        const week = document.getElementById("weekSelect").value;
+        if (teacherId && week) loadStudents(teacherId, week);
+      });
+    }
+
+    function getCurrentMonday() {
+      const today = new Date();
+      const monday = new Date(today.setDate(today.getDate() - today.getDay() + 1));
+      return monday.toISOString().split('T')[0];
+    }
+
+    async function loadStudents(teacherId, weekStart) {
+      const res = await fetch(`get_summer_students.php?teacher_id=${teacherId}&week_start=${weekStart}`);
+      const data = await res.json();
+      students = data.students || [];
+      const attendanceMap = {};
+      const summary = { Present: 0, Absent: 0, Late: 0, Excused: 0 };
+
+      (data.attendance || []).forEach(entry => {
+        const key = `${entry.student_id}_${entry.date}`;
+        attendanceMap[key] = entry.status;
+        if (entry.status in summary) summary[entry.status]++;
+      });
+
+      formatHeaderDates(weekStart);
+      populateTable(attendanceMap);
+      displaySummary(summary);
+    }
+
+    function formatHeaderDates(startDate) {
+      const headerRow = document.getElementById("attendanceHeaderRow");
+      const monday = new Date(startDate);
+      const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+      const headers = ["<th>Student Name</th>"];
+      for (let i = 0; i < 5; i++) {
+        const day = new Date(monday);
+        day.setDate(day.getDate() + i);
+        headers.push(`<th>${days[i]}<br>(${day.toLocaleDateString()})</th>`);
+      }
+      headerRow.innerHTML = headers.join('');
+    }
+    const statusLabels = {
+      'Present': '✅ Present',
+      'Absent': '❌ Absent',
+      'Late': '⏰ Late',
+      'Excused': '📝 Excused'
+    };
+
+    function getStatusOptions(currentValue) {
+      return ["", "Present", "Absent", "Late", "Excused"].map(value => {
+        const label = statusLabels[value] || '-- Select --';
+        const selected = value === currentValue ? 'selected' : '';
+        return `<option value="${value}" ${selected}>${label}</option>`;
+      }).join('');
+    }
+
+    function populateTable(attendanceMap) {
+      const tbody = document.getElementById("attendanceBody");
+      tbody.innerHTML = "";
+      const weekStart = new Date(document.getElementById("weekSelect").value);
+
+      students.forEach(student => {
+        let row = `<tr><td>${student.name}</td>`;
+        for (let i = 0; i < 5; i++) {
+          const date = new Date(weekStart);
+          date.setDate(date.getDate() + i);
+          const dateStr = date.toISOString().split('T')[0];
+          const key = `${student.id}_${dateStr}`;
+          const value = attendanceMap[key] || "";
+          row += `<td><select class="status-select" data-student-id="${student.id}" data-date="${dateStr}">
+            ${getStatusOptions(value)}
+          </select></td>`;
+        }
+        row += `</tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
+    function displaySummary(summary) {
+      const box = document.getElementById("summaryBox");
+      box.innerHTML = `Summary: 📅 Present: ${summary.Present}, ❌ Absent: ${summary.Absent}, ⏰ Late: ${summary.Late}, 📜 Excused: ${summary.Excused}`;
+    }
+
+    async function saveAttendance() {
+      const weekValue = document.getElementById("weekSelect").value;
+      const teacherId = isAdmin ? document.getElementById("teacherSelect").value : currentUserId;
+      if (!teacherId || !weekValue) return alert("Please complete all selections.");
+
+      const data = [];
+      const weekStart = new Date(weekValue);
+
+      document.querySelectorAll(".status-select").forEach(select => {
+        const studentId = select.dataset.studentId;
+        const date = select.dataset.date;
+        const status = select.value;
+        data.push({ student_id: studentId, teacher_id: teacherId, date, status });
+      });
+
+      const res = await fetch("save_summer_attendance.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+      alert(result.message || "Attendance saved!");
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      await checkUserRole();
+
+      const weekInput = document.getElementById("weekSelect");
+      weekInput.value = getCurrentMonday();
+
+      if (!isAdmin && currentUserId) {
+        loadStudents(currentUserId, weekInput.value);
+      }
+
+      document.getElementById("weekSelect").addEventListener("change", () => {
+        const teacherId = isAdmin ? document.getElementById("teacherSelect").value : currentUserId;
+        if (teacherId) loadStudents(teacherId, weekInput.value);
+      });
+
+      document.getElementById("saveAttendanceBtn").addEventListener("click", saveAttendance);
+    });
+  </script>
+
+</body>
+</html>

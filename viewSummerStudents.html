@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🌞 Summer Camp Students</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(to bottom right, #fefcea, #e4fdf9);
+      min-height: 100vh;
+      padding-bottom: 120px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    header {
+      background-color: #6db3a0;
+      color: #fffbe6;
+      padding: 20px 40px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    footer {
+      background-color: #6db3a0;
+      color: #fffbe6;
+      font-size: 16px;
+      padding: 20px;
+      text-align: center;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .back-button {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      background-color: #457e73;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .container {
+      padding: 120px 20px 60px 20px;
+      max-width: 1000px;
+      margin: auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #f59e0b;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      margin-bottom: 20px;
+    }
+
+    #teacherFilterSection {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #teacherFilter {
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 14px;
+      text-align: center;
+      border: 1px solid #d8f2ed;
+    }
+
+    th {
+      background-color: #d8f2ed;
+      color: #457e73;
+    }
+
+    td.name-cell {
+      text-align: left;
+      padding-left: 16px;
+      font-weight: 600;
+    }
+
+    .print-btn, .add-btn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #f59e0b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1001;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+      position: relative;
+      text-align: left;
+    }
+
+    .modal-content input,
+    .modal-content textarea,
+    .modal-content select {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .modal-content button[type="submit"] {
+      background-color: #38bdf8;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      display: block;
+      margin: 20px auto 0;
+    }
+
+    .close-btn {
+      color: #aaa;
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: #f00;
+    }
+
+    .floating-emoji {
+      position: fixed;
+      top: -50px;
+      font-size: 28px;
+      opacity: 0.6;
+      z-index: 0;
+      animation: floatDown linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes floatDown {
+      0%   { transform: translateY(-60px) rotate(0); opacity: 0.6; }
+      50%  { transform: translateY(50vh) rotate(180deg); }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+   @media print {
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Nunito', sans-serif;
+    background: white;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #printable, #printable * {
+    visibility: visible;
+  }
+
+  #printable {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+
+ .add-btn, .modal {
+    display: none !important;
+  }
+
+  h1 {
+    font-size: 22px;
+    margin: 20px 0 10px;
+    text-align: center;
+    color: #f59e0b;
+  }
+
+  table {
+    width: 100%;
+    border: 2px solid #f59e0b;
+    border-collapse: collapse;
+    font-size: 12px;
+    background-color: #fffef6;
+  }
+
+  th {
+    background-color: #fff3cd;
+    color: #e67e22;
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  td {
+    padding: 8px;
+    font-size: 12px;
+    color: #333;
+  }
+
+  #teacherFilterSection {
+  display: none !important;
+}
+
+ .add-btn, .print-btn, .modal, header, footer, .floating-emoji,
+  #teacherFilterSection,
+  td button, th:last-child, td:last-child {
+    display: none !important;
+  }
+
+  table {
+    page-break-inside: avoid;
+    width: 100%;
+  }
+
+ 
+}
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="back-button" href="Homepage.html">&larr; Back</a>
+  🌞 Summer Camp Students
+</header>
+
+<main class="container" id="printable">
+  <h1>Summer Camp Students</h1>
+
+  <div id="teacherFilterSection" style="display: none;">
+    <label for="teacherFilter" id="filterLabel" style="display:none;"><strong>Select Teacher:</strong></label>
+    <select id="teacherFilter" style="display:none;">
+      <option value="">-- All Teachers --</option>
+    </select>
+  </div>
+
+
+ <div style="text-align: center; margin-bottom: 15px;">
+    <button class="add-btn" onclick="openAddStudentModal()">➕ Add Student</button>
+  </div>
+
+  <table id="studentTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>School Grade</th>
+        <th>Age</th>
+        <th>Assigned Teacher</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="summerCampStudentList"></tbody>
+  </table>
+
+  <button class="print-btn" onclick="window.print()">🖨️ Print Table</button>
+</main>
+
+<footer>
+  🌴 Have a joyful and bright summer with Thaakireen! 🌈
+</footer>
+
+<!-- Add/Edit Student Modal -->
+<div id="studentModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <h2>Add/Edit Summer Camp Student</h2>
+    <form id="addStudentForm">
+      <input type="hidden" name="id" id="studentId" />
+      <input type="text" name="first_name" id="firstName" placeholder="First Name" required />
+      <input type="text" name="last_name" id="lastName" placeholder="Last Name" required />
+      <input type="text" name="school_grade" id="schoolGrade" placeholder="School Grade" required />
+      <input type="number" name="age" id="age" placeholder="Age" min="3" max="18" required />
+      <textarea name="notes" id="notes" placeholder="Notes (optional)"></textarea>
+      <select name="assigned_teacher_id" id="assignedTeacher" required>
+        <option value="">-- Select Teacher --</option>
+      </select>
+      <button type="submit">Save Student</button>
+    </form>
+  </div>
+</div>
+
+
+<footer>
+  🌴 Have a joyful and bright summer with Thaakireen! 🌈
+</footer>
+
+<!-- Floating fun emojis -->
+<script>
+function openModal() {
+  document.getElementById("addStudentForm").reset();
+  document.getElementById("studentId").value = "";
+  populateTeacherDropdown();
+  document.getElementById("studentModal").style.display = "block";
+}
+
+
+  const icons = ['🦋', '🌸', '🌟', '🌈', '🍉', '🍧', '🪁', '☀️', '🚀', '🎈'];
+  function createFloatingIcon() {
+    const span = document.createElement("span");
+    span.className = "floating-emoji";
+    span.textContent = icons[Math.floor(Math.random() * icons.length)];
+    span.style.left = `${Math.random() * 100}%`;
+    span.style.animationDuration = `${6 + Math.random() * 6}s`;
+    document.body.appendChild(span);
+    setTimeout(() => span.remove(), 12000);
+  }
+  setInterval(createFloatingIcon, 700);
+</script>
+
+<script>
+ let isEditMode = false;
+
+function loadStudentsByTeacher(teacherId = null) {
+  const selectedId = teacherId || document.getElementById("teacherFilter")?.value || "";
+  fetch(`fetch_summer_camp_students.php?teacher_id=${selectedId}`)
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById("summerCampStudentList");
+      tbody.innerHTML = "";
+      data.forEach(s => {
+        tbody.innerHTML += `
+          <tr>
+            <td class="name-cell">${s.first_name} ${s.last_name}</td>
+            <td>${s.school_grade}</td>
+            <td>${s.age || ""}</td>
+            <td>${s.teacher_name || ""}</td>
+            <td>
+              <button onclick='editStudent(${JSON.stringify(s)})'>✏️ Edit</button>
+              <button onclick='deleteStudent(${s.id})'>🗑️ Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+    });
+}
+
+function loadTeachers() {
+  fetch("fetch_dropdowns.php")
+    .then(res => res.json())
+    .then(data => {
+      const teacherSelect = document.getElementById("teacherFilter");
+      teacherSelect.innerHTML = '<option value="">-- All Teachers --</option>';
+      (data.summerCampTeachers || []).forEach(t => {
+        const option = document.createElement("option");
+        option.value = t.id;
+        option.textContent = t.name;
+        teacherSelect.appendChild(option);
+      });
+
+      teacherSelect.addEventListener("change", () => {
+        const selectedId = teacherSelect.value;
+        loadStudentsByTeacher(selectedId);
+      });
+    });
+}
+
+fetch("check_student_access.php")
+  .then(res => res.json())
+  .then(data => {
+    if (!data.allowed) {
+      document.body.innerHTML = '<h2 style="color:red;text-align:center;margin-top:100px">You do not have access to this page.</h2>';
+      return;
+    }
+
+    if (data.showFilter) {
+      document.getElementById("teacherFilterSection").style.display = "block";
+      document.getElementById("teacherFilter").style.display = "inline-block";
+      document.getElementById("filterLabel").style.display = "inline-block";
+      loadTeachers();
+    } else {
+      loadStudentsByTeacher(data.teacherId);
+    }
+  });
+
+// 🔄 Populate teacher dropdown inside modal
+function populateTeacherDropdown(callback = null) {
+  fetch("fetch_dropdowns.php")
+    .then(res => res.json())
+    .then(data => {
+      const select = document.getElementById("assignedTeacher");
+      select.innerHTML = '<option value="">-- Select Teacher --</option>';
+      (data.summerCampTeachers || []).forEach(t => {
+        const option = document.createElement("option");
+        option.value = t.id;
+        option.textContent = t.name;
+        select.appendChild(option);
+      });
+      if (callback) callback();
+    });
+}
+
+// ➕ Add Student
+function openAddStudentModal() {
+  isEditMode = false;
+  document.getElementById("addStudentForm").reset();
+  document.getElementById("studentId").value = "";
+  populateTeacherDropdown();
+  openModal();
+}
+
+// ✏️ Edit Student
+function editStudent(student) {
+  isEditMode = true;
+  populateTeacherDropdown(() => {
+    document.getElementById("studentId").value = student.id;
+    document.getElementById("firstName").value = student.first_name;
+    document.getElementById("lastName").value = student.last_name;
+    document.getElementById("schoolGrade").value = student.school_grade;
+    document.getElementById("age").value = student.age;
+    document.getElementById("notes").value = student.notes || "";
+    document.getElementById("assignedTeacher").value = student.assigned_teacher_id || "";
+  });
+  openModal();
+}
+
+// 🗑️ Delete Student
+function deleteStudent(id) {
+  if (confirm("Are you sure you want to delete this student?")) {
+    fetch("delete_summer_student.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("Student deleted successfully.");
+        loadStudentsByTeacher();
+      } else {
+        alert("Failed to delete student.");
+      }
+    });
+  }
+}
+
+// 📦 Modal Control
+function openModal() {
+  document.getElementById("studentModal").style.display = "block";
+}
+function closeModal() {
+  document.getElementById("studentModal").style.display = "none";
+}
+
+// ✅ Form Submit (handles both insert & update)
+document.getElementById("addStudentForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+
+  fetch("insert_summer_student.php", {
+    method: "POST",
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("Student saved successfully!");
+      closeModal();
+      loadStudentsByTeacher();
+    } else {
+      alert("Error: " + data.message);
+    }
+  })
+  .catch(() => alert("Submission failed."));
+});
+
+
+</script>
+
+</body>
+</html>

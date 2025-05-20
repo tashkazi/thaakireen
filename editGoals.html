@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thaakireen - Goals</title>
+  <style>
+   body {
+      margin: 0;
+      padding-bottom: 60px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f9f7;
+    }
+
+    header, footer {
+      background-color: #387a5f;
+      color: #fff;
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    header {
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer {
+      bottom: 0;
+      text-align: center;
+    }
+
+    #logo img {
+      max-height: 50px;
+    }
+
+    #menu-container ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-right: 50px;
+      padding: 0;
+    }
+
+    #menu-container a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 20px;
+      margin-top: 100px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto 100px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #d0e7de;
+    }
+
+    select {
+      padding: 6px;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .button-row {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .button-row button {
+      padding: 10px 20px;
+      background-color: #387a5f;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .button-row button:hover {
+      background-color: #2f6d55;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div id="logo">
+    <img src="uploads/Logo.png" alt="Thaakireen Logo"/>
+  </div>
+  <div id="menu-container">
+    <ul>
+      <li><a href="Homepage.html">Home</a></li>
+      <li><a href="Profile.html">My Profile</a></li>
+      <li><a href="Login.html">Logout</a></li>
+    </ul>
+  </div>
+</header>
+
+<h1>View and Edit Surah & Dua Goals</h1>
+
+<div class="container">
+  <table>
+    <thead>
+      <tr>
+        <th>Grade</th>
+        <th>Surah Goal</th>
+        <th>Dua Goal</th>
+      </tr>
+    </thead>
+    <tbody id="goalTableBody">
+      <!-- JS will populate rows -->
+    </tbody>
+  </table>
+
+  <div class="button-row">
+    <button onclick="saveGoals()">Save Changes</button>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2024 Thaakireen. All rights reserved.</p>
+</footer>
+
+<script>
+const surahs = [], duas = [], surahGoals = [], duaGoals = [];
+
+async function loadGoals() {
+  try {
+    const [surahRes, duaRes, surahGoalRes, duaGoalRes] = await Promise.all([
+      fetch("fetch_surahs.php"),
+      fetch("fetch_duas_for_goals.php"), // should return { duas: [...] }
+      fetch("fetch_grade_surah_goals.php"), // should return { goals: [...] }
+      fetch("fetch_grade_dua_goals.php")    // should return { goals: [...] }
+    ]);
+
+    const surahData = await surahRes.json();
+    const duaData = await duaRes.json();
+    const surahGoalData = await surahGoalRes.json();
+    const duaGoalData = await duaGoalRes.json();
+
+
+    if (surahData?.surahs) surahs.push(...surahData.surahs);
+    if (duaData?.duas) duas.push(...duaData.duas);
+    if (surahGoalData?.goals) surahGoals.push(...surahGoalData.goals);
+    if (duaGoalData?.goals) duaGoals.push(...duaGoalData.goals);
+
+    // ✅ Normalize grades as plain numbers (e.g., "1", "2")
+    const allGrades = new Set([
+      ...surahGoals.map(g => `${parseInt(g.school_grade)}`),
+      ...duaGoals.map(g => `${parseInt(g.school_grade)}`)
+    ]);
+
+    const sortedGrades = Array.from(allGrades).sort((a, b) => parseInt(a) - parseInt(b));
+
+    const tbody = document.getElementById("goalTableBody");
+    tbody.innerHTML = "";
+
+    sortedGrades.forEach(grade => {
+      const tr = document.createElement("tr");
+
+      // Grade column
+      const tdGrade = document.createElement("td");
+      tdGrade.textContent = `Grade ${grade}`;
+      tr.appendChild(tdGrade);
+
+      // Surah dropdown
+      const tdSurah = document.createElement("td");
+      const surahSelect = document.createElement("select");
+      surahSelect.dataset.grade = grade;
+      surahSelect.name = "surahGoal";
+
+      surahs.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s.id;
+        opt.textContent = s.name;
+        if (
+          surahGoals.find(
+            g => `${parseInt(g.school_grade)}` === grade && g.goal_surah_id == s.id
+          )
+        ) {
+          opt.selected = true;
+        }
+        surahSelect.appendChild(opt);
+      });
+
+      tdSurah.appendChild(surahSelect);
+      tr.appendChild(tdSurah);
+
+      // Dua dropdown
+      const tdDua = document.createElement("td");
+      const duaSelect = document.createElement("select");
+      duaSelect.dataset.grade = grade;
+      duaSelect.name = "duaGoal";
+
+      duas.forEach(d => {
+        const opt = document.createElement("option");
+        opt.value = d.id;
+        opt.textContent = d.dua_name;
+        if (
+          duaGoals.find(
+            g => `${parseInt(g.school_grade)}` === grade && g.goal_dua_id == d.id
+          )
+        ) {
+          opt.selected = true;
+        }
+        duaSelect.appendChild(opt);
+      });
+
+      tdDua.appendChild(duaSelect);
+      tr.appendChild(tdDua);
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error("Failed to load goals:", err);
+    alert("Error loading data. Check your browser console for details.");
+  }
+}
+
+async function saveGoals() {
+  const surahUpdates = [];
+  const duaUpdates = [];
+
+  // Get all unique grade rows from the table
+  const rows = document.querySelectorAll("#goalTableBody tr");
+
+  rows.forEach(row => {
+    const gradeLabel = row.querySelector("td:first-child").textContent.trim(); // "Grade 1"
+    const grade = gradeLabel.replace("Grade", "").trim(); // "1"
+
+    const surahSelect = row.querySelector("select[name='surahGoal']");
+    const duaSelect = row.querySelector("select[name='duaGoal']");
+
+    const surahId = surahSelect?.value;
+    const duaId = duaSelect?.value;
+
+    // Push both values together even if unchanged
+    if (surahId) {
+      surahUpdates.push({ grade: grade, surah_id: surahId });
+    }
+    if (duaId) {
+      duaUpdates.push({ grade: grade, dua_id: duaId });
+    }
+  });
+
+  try {
+    const res = await fetch("update_all_goals.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ surahs: surahUpdates, duas: duaUpdates })
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const result = await res.json();
+    if (result.success) {
+      alert("Goals updated successfully.");
+    } else {
+      console.error("Server errors:", result.errors || []);
+      alert("Update failed.\n" + (result.errors?.join("\n") || "Unknown error."));
+    }
+  } catch (err) {
+    console.error("Failed to save goals:", err);
+    alert("Error saving data. See console for more information.");
+  }
+}
+
+
+window.addEventListener("DOMContentLoaded", loadGoals);
+</script>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thaakireen - Mark Sheet</title>
+  <style>
+    body {
+      margin: 0;
+      padding-bottom: 60px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f9f7;
+    }
+
+    header, footer {
+      background-color: #387a5f;
+      color: #fff;
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    header {
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer {
+      bottom: 0;
+      text-align: center;
+    }
+
+    #logo img {
+      max-height: 50px;
+    }
+
+    #menu-container ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-right: 50px;
+      padding: 0;
+    }
+
+    #menu-container a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 100px auto 50px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .dropdown-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      margin: 40px auto;
+      max-width: 800px;
+      text-align: left;
+    }
+
+    .dropdown-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 220px;
+    }
+
+    .dropdown-group label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #387a5f;
+      font-size: 16px;
+    }
+
+    .dropdown-group select {
+      padding: 8px 12px;
+      font-size: 16px;
+      border: 2px solid #387a5f;
+      border-radius: 6px;
+      font-family: 'Times New Roman', Times, serif;
+      background-color: #f9fdfc;
+      color: #333;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    table th, table td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #ccc;
+    }
+
+    table thead {
+      background-color: #d0e7de;
+    }
+
+    button[type="submit"] {
+      background-color: #387a5f;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #2f6b54;
+    }
+
+    .form-actions {
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div id="logo">
+    <img src="uploads/Logo.png" alt="Thaakireen Logo">
+  </div>
+  <div id="menu-container">
+    <ul>
+      <li><a href="Homepage.html">Home</a></li>
+      <li><a href="Profile.html">My Profile</a></li>
+      <li><a href="Login.html">Logout</a></li>
+    </ul>
+  </div>
+</header>
+
+<div class="container">
+  <h1>Mark Sheet</h1>
+
+  <div class="dropdown-container">
+    <div class="dropdown-group" id="teacherDropdownGroup">
+      <label for="teacherSelect">Select Teacher:</label>
+      <select id="teacherSelect"></select>
+    </div>
+    <div class="dropdown-group">
+      <label for="studentSelect">Select Student:</label>
+      <select id="studentSelect" onchange="loadStudentMarks()">
+        <option value="">-- Choose Student --</option>
+      </select>
+    </div>
+  </div>
+
+  <form id="updateWrittenMarksForm">
+    <input type="hidden" id="studentIdInput" name="student_id">
+    <input type="hidden" id="teacherIdInput" name="teacher_id">
+    <input type="hidden" id="examinerIdInput" name="examiner_id">
+    <input type="hidden" id="gradeInput" name="grade">
+
+    <h3>Written Subjects</h3>
+    <table>
+      <thead><tr><th>Subject</th><th>Marks (out of 100)</th></tr></thead>
+      <tbody>
+        <tr><td>Aqaa’id</td><td><input type="number" id="aqaaid_score" name="aqaaid_score" max="100" min="0" required></td></tr>
+        <tr><td>Akhlaaq & Adab</td><td><input type="number" id="akhlaaq_adab_score" name="akhlaaq_adab_score" max="100" min="0" required></td></tr>
+        <tr><td>Taareekh</td><td><input type="number" id="taareekh_score" name="taareekh_score" max="100" min="0" required></td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top: 30px;">Oral Subjects</h3>
+    <table>
+      <thead><tr><th>Subject</th><th>Marks (out of 100)</th></tr></thead>
+      <tbody>
+        <tr><td>Quran Recitation</td><td><input type="number" id="quran_recitation_score" name="quran_recitation_score" max="100" min="0" required></td></tr>
+        <tr><td>Surah Memorization</td><td><input type="number" id="surah_memorization_score" name="surah_memorization_score" max="100" min="0" disabled></td></tr>
+        <tr><td>Dua Memorization</td><td><input type="number" id="dua_score" name="dua_score" max="100" min="0" disabled></td></tr>
+        <tr><td>Ahadeeth</td><td><input type="number" id="ahadeeth_score" name="ahadeeth_score" max="100" min="0" required></td></tr>
+      </tbody>
+    </table>
+
+    <div class="form-actions">
+     <button type="submit">Save Marks</button>
+
+    </div>
+  </form>
+</div>
+
+
+<footer>
+    <p>&copy; 2024 Thaakireen. All rights reserved.</p>
+</footer>
+
+<script>
+let isAdmin = false;
+let isTeacher = false;
+let teacherId = null;
+let studentMap = {}; // key: teacherId -> list of students
+let allStudents = [];
+
+async function checkUserRole() {
+  const res = await fetch("check_user_role.php");
+  const data = await res.json();
+  isAdmin = data.isAdmin;
+  isTeacher = data.isTeacher;
+  teacherId = data.teacherId || null;
+}
+
+async function populateDropdowns() {
+  const res = await fetch("fetch_dropdowns.php");
+  const data = await res.json();
+  allStudents = data.students || [];
+  const teacherSelect = document.getElementById("teacherSelect");
+  const studentSelect = document.getElementById("studentSelect");
+
+  // Build map: teacherId -> students
+  studentMap = {};
+  allStudents.forEach(s => {
+    if (!studentMap[s.teacher_id]) studentMap[s.teacher_id] = [];
+    studentMap[s.teacher_id].push(s);
+  });
+
+  if (isAdmin) {
+    // Show both dropdowns
+    teacherSelect.style.display = "inline-block";
+    studentSelect.style.display = "inline-block";
+
+    // Populate teacher dropdown
+    teacherSelect.innerHTML = `<option value="">-- Select Teacher --</option>`;
+    (data.teachers || []).forEach(t => {
+      teacherSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+    });
+
+    // Filter students when teacher is selected
+    teacherSelect.addEventListener("change", () => {
+      const selectedTeacherId = teacherSelect.value;
+      populateStudentDropdown(selectedTeacherId);
+    });
+
+ } else if (isTeacher) {
+  // ✅ Hide the entire teacher dropdown group
+  const teacherGroup = document.getElementById("teacherDropdownGroup");
+  if (teacherGroup) teacherGroup.style.display = "none";
+
+  // ✅ Populate only their students
+  populateStudentDropdown(teacherId);
+}
+
+}
+
+function populateStudentDropdown(filterTeacherId) {
+  const studentSelect = document.getElementById("studentSelect");
+  studentSelect.innerHTML = `<option value="">-- Select Student --</option>`;
+
+  const teacherKey = parseInt(filterTeacherId);  // 🔧 convert to number
+  const students = studentMap[teacherKey] || [];
+
+  students.forEach(s => {
+    studentSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+  });
+}
+
+
+// 🟩 Initialization
+window.addEventListener("DOMContentLoaded", async () => {
+  await checkUserRole();
+  await populateDropdowns();
+});
+
+
+
+function clearMarkSheet() {
+    ["studentIdInput", "teacherIdInput", "examinerIdInput", "gradeInput"].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.value = "";
+    });
+    ["aqaaid_score", "akhlaaq_adab_score", "taareekh_score",
+     "quran_recitation_score", "surah_memorization_score",
+     "dua_score", "ahadeeth_score"].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.value = "";
+    });
+}
+
+function roundToWhole(val) {
+    const num = parseFloat(val);
+    return isNaN(num) ? '' : Math.round(num);
+}
+
+function loadStudentMarks() {
+    const studentId = document.getElementById("studentSelect").value;
+    if (!studentId) return clearMarkSheet();
+
+    fetch(`fetch_marks.php?student_id=${studentId}`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data) {
+                alert("No marks found.");
+                return clearMarkSheet();
+            }
+
+            document.getElementById("studentIdInput").value = studentId;
+            document.getElementById("teacherIdInput").value = data.teacher_id || '';
+            document.getElementById("examinerIdInput").value = data.examiner_id || '';
+            document.getElementById("gradeInput").value = data.grade || '';
+
+            document.getElementById("aqaaid_score").value = roundToWhole(data.aqaaid_score);
+            document.getElementById("akhlaaq_adab_score").value = roundToWhole(data.akhlaaq_adab_score);
+            document.getElementById("taareekh_score").value = roundToWhole(data.taareekh_score);
+            document.getElementById("quran_recitation_score").value = roundToWhole(data.quran_recitation_score);
+            document.getElementById("surah_memorization_score").value = roundToWhole(data.surah_memorization_score);
+            document.getElementById("dua_score").value = roundToWhole(data.dua_score);
+            document.getElementById("ahadeeth_score").value = roundToWhole(data.ahadeeth_score);
+        })
+        .catch(err => {
+            console.error("Error loading marks:", err);
+            alert("An error occurred while loading student marks.");
+            clearMarkSheet();
+        });
+}
+
+function setupFormSubmit() {
+    const form = document.getElementById("updateWrittenMarksForm");
+    const submitBtn = form.querySelector("button[type='submit']");
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        if (!form.checkValidity()) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Saving...";
+
+        const formData = new FormData(form);
+        const studentId = document.getElementById("studentSelect").value;
+
+        fetch("save_marks.php", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Network response was not OK");
+            return res.text();
+        })
+        .then(text => {
+            let json;
+            try {
+                json = JSON.parse(text);
+            } catch (err) {
+                throw new Error("Invalid server response:\n" + text);
+            }
+
+            if (json.success) {
+                alert("✅ All marks saved successfully!");
+                // ✅ Reload saved marks for the same student
+                loadStudentMarks(); 
+            } else {
+                throw new Error(json.message || "Unknown error");
+            }
+        })
+        .catch(err => {
+            alert("❌ Error saving marks: " + err.message);
+            console.error("Save error:", err);
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Save Marks";
+        });
+    });
+}
+window.addEventListener("DOMContentLoaded", async () => {
+  await checkUserRole();
+  await populateDropdowns();
+  setupFormSubmit(); // ✅ This was missing
+});
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thaakireen - Registration</title>
+  <style>
+    body{
+     font-family: Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background-image: url('uploads/login-bg.png'); /* Your soft image here */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.6);
+      backdrop-filter: grayscale(60%);
+      z-index: -1;
+    }
+
+
+    .registration-container {
+      padding: 30px 40px;
+      margin-bottom: 100px;
+      margin-top: 100px;
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(255, 255, 255, 0.85);
+      box-sizing: border-box;
+      max-width: 500px;
+      width: 90%;
+      border: 1px solid #387a5f;
+    }
+
+    .logo-container img {
+      width: 100%;
+      max-width: 120px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    form label,
+    form input,
+    form textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      font-size: 16px;
+    }
+
+    form button {
+      margin-top: 10px;
+      width: 50%;
+      padding: 10px;
+      background-color: #387a5f;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 5px;
+    }
+
+    form button:hover {
+      background-color: #2f654e;
+    }
+
+    .registration-container p {
+      font-size: 14px;
+      text-align: center;
+    }
+
+    a {
+      color: #387a5f;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="background-image">
+      <div class="registration-container">
+        <div class="logo-container">
+          <img src="uploads/Logo.png" alt="Thaakireen Logo" />
+        </div>
+        <h2>Register for Thaakireen</h2>
+
+        <form id="userRegistrationForm" action="register.php" method="post">
+          <label for="firstName">First Name:</label>
+          <input type="text" id="firstName" name="firstName" required />
+
+          <label for="lastName">Last Name:</label>
+          <input type="text" id="lastName" name="lastName" required />
+
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required />
+
+          <label for="phone">Phone Number:</label>
+          <input type="tel" id="phone" name="phone" required />
+
+          <label for="password">Choose Password:</label>
+          <input type="password" id="password" name="password" required />
+
+          <label for="notes">Additional Notes (optional):</label>
+          <textarea id="notes" name="notes" rows="4"></textarea>
+
+          <button type="submit">Submit Registration</button>
+        </form>
+
+        <p>
+          Thank you for registering. You will be able to log in once your profile is approved by an administrator.
+        </p>
+        <p>
+          Already registered? <a href="login.html">Login</a>
+        </p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thaakireen - Verify Users</title>
+    <style>
+       body {
+      margin: 0;
+      padding-bottom: 60px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f9f7;
+    }
+
+
+        header, footer {
+            background-color: #387a5f;
+            color: #fff;
+            padding: 10px 20px;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        header {
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        footer {
+            bottom: 0;
+            text-align: center;
+        }
+
+        #logo img {
+            max-height: 50px;
+        }
+
+        #menu-container ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-right: 50px;
+            padding: 0;
+            height: 100%;
+        }
+        
+
+        #menu-container a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto 50px auto;
+            padding: 20px;
+            margin-top: 100px;
+            margin-bottom:100px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+
+        select, input, button {
+            padding: 8px;
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #d0e7de;
+        }
+
+
+        td.name-cell {
+            text-align: left;
+        }
+        
+
+
+        .button-row {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .button-row button {
+            margin: 0 10px;
+        }
+
+        td.role-cell {
+            text-align: left;
+        }
+        
+    </style>
+</head>
+
+
+<body>
+
+<header>
+    <div id="logo">
+        <img src="uploads/Logo.png" alt="Thaakireen Logo">
+    </div>
+    <div id="menu-container">
+        <ul>
+            <li><a href="Homepage.html">Home</a></li>
+            <li><a href="Profile.html">My Profile</a></li>
+            <li><a href="Login.html">Logout</a></li>
+        </ul>
+    </div>
+</header>
+
+<div class="container">
+  <h1>Verify Users</h1>
+    <table id="pendingUsersTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Assign Roles</th>
+                <th>Approve</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be loaded here -->
+        </tbody>
+    </table>
+</div>
+
+<footer>
+    <p>&copy; 2024 Thaakireen. All rights reserved.</p>
+</footer>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    fetch("get_pending_users.php")
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.querySelector("#pendingUsersTable tbody");
+        tbody.innerHTML = "";
+
+        data.users.forEach(user => {
+          const row = document.createElement("tr");
+
+          row.innerHTML = `
+            <td class="name-cell">${user.firstName} ${user.lastName}</td>
+            <td>${user.email}</td>
+            <td class="role-cell">
+              <label><input type="checkbox" name="role_admin_${user.id}"> Admin</label><br>
+              <label><input type="checkbox" name="role_teacher_${user.id}"> Teacher</label><br>
+              <label><input type="checkbox" name="role_examiner_${user.id}"> Examiner</label><br>
+              <label><input type="checkbox" name="role_principal_${user.id}"> Principal</label><br>
+              <label><input type="checkbox" name="role_coordinator_${user.id}"> Coordinator</label><br>
+              <label><input type="checkbox" name="role_supervisor_${user.id}"> Supervisor</label><br>
+              <label><input type="checkbox" name="role_volunteer_${user.id}"> Volunteer</label><br>
+              <label><input type="checkbox" name="role_summerCampTeacher_${user.id}"> Summer Camp Teacher</label>
+            </td>
+            <td>
+              <button onclick="approveUser(${user.id})">Approve</button>
+            </td>
+          `;
+
+          tbody.appendChild(row);
+        });
+      });
+  });
+
+  function approveUser(userId) {
+    const roles = [
+      "admin", "teacher", "examiner",
+      "principal", "coordinator", "supervisor",
+      "volunteer", "summerCampTeacher"
+    ];
+
+    const roleFlags = {};
+
+    roles.forEach(role => {
+      const checkbox = document.querySelector(`[name="role_${role}_${userId}"]`);
+      roleFlags[`is${capitalize(role)}`] = checkbox && checkbox.checked ? 1 : 0;
+    });
+
+    fetch("approve_user.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, ...roleFlags })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("User approved!");
+        location.reload();
+      } else {
+        alert("Error: " + data.message);
+      }
+    });
+  }
+
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+</script>
+</body>
+</html>

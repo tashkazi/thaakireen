@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thaakireen - Quran Exam</title>
+  <!-- ✅ Load external libraries only -->
+  <style>
+     body {
+      margin: 0;
+      padding-bottom: 60px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f9f7;
+    }
+    
+
+    .exam-table input[type="number"] {
+      width: 60px;
+    }
+  
+    .exam-table input.fluency-score,
+    .exam-table input.weighted-score {
+      width: 70px;
+    }
+  
+    .exam-table input.stuck-errors {
+      width: 50px; /* specifically make "Stuck" narrower */
+    }
+  
+.exam-button {
+  background-color: #387a5f;
+  color: white;
+  padding: 10px 18px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: 'Segoe UI', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.exam-button:hover {
+  background-color: #2f684f;
+  transform: translateY(-1px);
+}
+
+.exam-button.secondary {
+  background-color: #ccc;
+  color: #333;
+}
+
+.exam-button.secondary:hover {
+  background-color: #bbb;
+}
+
+
+    .exam-table th,
+    .exam-table td {
+      text-align: center;
+      padding: 6px;
+    }
+
+    header, footer {
+        background-color: #387a5f;
+        color: #fff;
+        padding: 10px 20px;
+        position: fixed;
+        width: 100%;
+        z-index: 1000;
+    }
+
+    header {
+        top: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    footer {
+        bottom: 0;
+        text-align: center;
+    }
+
+    #logo img {
+        max-height: 50px;
+    }
+
+    #menu-container ul {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-right: 50px;
+        padding: 0;
+    }
+
+    #menu-container a {
+        text-decoration: none;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    h1 {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+
+    .exam-form {
+      padding: 20px;
+      margin-top: 60px;
+      max-width: 1200px;
+      background: white;
+     margin-bottom: 90px;
+     margin-left: 90px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .exam-form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .exam-form select,
+    .exam-form input[type="date"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .exam-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .exam-table th, .exam-table td {
+      border: 1px solid #387a5f;
+      padding: 10px;
+      text-align: center;
+    }
+    .exam-table th {
+      background-color: #e7f3ec;
+      color: #387a5f;
+    }
+    .submit-button {
+      background-color: #387a5f;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .submit-button:hover {
+      background-color: #2f654e;
+    }
+
+    .exam-table td:first-child,
+.exam-table th:first-child {
+  text-align: left;
+}
+
+  </style>
+</head>
+<body>
+<header>
+  <div id="logo">
+    <img src="uploads/Logo.png" alt="Thaakireen Logo" />
+  </div>
+  <div id="menu-container">
+    <ul>
+      <li><a href="Homepage.html">Home</a></li>
+      <li><a href="Profile.html">My Profile</a></li>
+      <li><a href="Login.html">Logout</a></li>
+    </ul>
+  </div>
+</header>
+<main>
+
+    
+  <div class="exam-form">
+      <h1>Quran Exam</h1>
+    <label for="examDate">Exam Date:</label>
+    <input type="date" id="examDate" name="examDate" />
+    <label for="studentName">Student Name:</label>
+    <select id="studentName" name="studentName">
+      <option value="">Select Student</option>
+    </select>
+    <label for="teacher">Teacher:</label>
+    <select id="teacher" name="teacher" disabled></select>
+    <label for="examiner">Examiner:</label>
+    <select id="examiner" name="examiner">
+      <option value="">Select Examiner</option>
+    </select>
+    <label for="grade">Grade:</label>
+    <select id="grade" name="grade" disabled></select>
+
+    <table class="exam-table">
+        <thead>
+            <tr>
+              <th>Surah</th>
+              <th>Ayaat Forgotten</th>
+              <th>Stuck</th>
+              <th>Tajweed/Makhaarij Errors</th>
+              <th>Fluency</th>
+              <th>Weighted Score</th>
+              <th>Not Reached</th>
+              <th>Skipped</th>
+            </tr>
+          </thead>
+          
+      <tbody id="surahTableBody"></tbody>
+    </table>
+    
+<div class="button-group" style="margin-top: 20px;">
+  <button id="submitBtn" class="exam-button">Submit</button>
+  <button id="updateBtn" style="display: none;" class="exam-button">Update</button>
+  <button id="newExamBtn" style="display: none;" class="exam-button secondary">New Exam</button>
+</div>
+
+    <button class="submit-button" onclick="exportToPDF()">Save Current Student</button>
+    <button class="submit-button" onclick="exportWholeClass()">Save Whole Class</button>
+    
+    
+  </div>
+
+</main>
+
+<footer>
+  <p>&copy; 2024 Thaakireen. All rights reserved.</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<!-- Required libraries (order matters) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+   async function exportToPDF() {
+  const originalTable = document.querySelector(".exam-table");
+  if (!originalTable) {
+    alert("Table not found.");
+    return;
+  }
+
+  // Clone the table
+  const clonedTable = originalTable.cloneNode(true);
+  const originalInputs = originalTable.querySelectorAll("input");
+  const clonedInputs = clonedTable.querySelectorAll("input");
+
+  // Replace all inputs with clean spans
+  clonedInputs.forEach((input, i) => {
+    const original = originalInputs[i];
+    const value = original.type === "checkbox" ? (original.checked ? "✓" : "") : original.value;
+
+    const span = document.createElement("span");
+    span.textContent = value;
+    span.style.padding = "1px";
+    span.style.fontSize = "4px";
+    span.style.display = "inline-block";
+    span.style.minWidth = "26px";
+    span.style.textAlign = "center";
+
+    input.parentNode.replaceChild(span, input);
+  });
+
+  // Add student name row
+  const studentName = document.getElementById("studentName")?.selectedOptions[0]?.textContent || "Unknown Student";
+  const teacherName = document.getElementById("teacher")?.selectedOptions[0]?.textContent || "Unknown Teacher";
+  const studentId = document.getElementById("studentName")?.value || "-";
+
+
+  // Apply consistent table styling
+  clonedTable.style.fontSize = "4px";
+  clonedTable.style.borderCollapse = "collapse";
+  clonedTable.style.width = "100%";
+  // Remove spacing between header and table
+clonedTable.style.marginTop = "0";
+clonedTable.style.paddingTop = "0";
+clonedTable.style.borderTop = "none"; 
+// optional
+clonedTable.style.border = "none";
+clonedTable.style.borderSpacing = "0";
+clonedTable.style.borderCollapse = "collapse";
+
+
+  clonedTable.querySelectorAll("td, th").forEach(cell => {
+  cell.style.fontSize = "4px";
+  cell.style.fontWeight = "normal";
+  cell.style.padding = "0.5px";
+  cell.style.lineHeight = "0.85";
+  cell.style.verticalAlign = "middle";
+
+  // ✅ Thin consistent border on all 4 sides
+  cell.style.border = "0.1px solid #ccc"; 
+});
+
+
+ 
+// ❌ Remove or hide the "Total Ayaat" lines
+clonedTable.querySelectorAll("td div").forEach(div => {
+  if (div.textContent?.toLowerCase().includes("total ayaat")) {
+    div.style.display = "none"; // ✅ completely hides it
+  }
+});
+
+  // Grey out Not Reached rows
+  clonedTable.querySelectorAll("tr").forEach(row => {
+    const notReachedCell = row.querySelector("td:last-child span");
+    if (notReachedCell?.textContent === "✓") {
+      row.style.backgroundColor = "#f0f0f0";
+      row.style.color = "#999";
+    }
+  });
+
+  // Remove Bonus and Deductions rows
+  clonedTable.querySelectorAll("tr").forEach(row => {
+    const label = row.children[0]?.textContent?.toLowerCase() || "";
+    if (label.includes("bonus") || label.includes("deductions")) {
+      row.remove();
+    }
+  });
+
+// Header with student name (left) and teacher name (right)
+const headerDiv = document.createElement("div");
+headerDiv.style.display = "flex";
+headerDiv.style.justifyContent = "space-between";
+headerDiv.style.alignItems = "center";
+headerDiv.style.fontSize = "4px";
+headerDiv.style.marginBottom = "1px"; // 🔧 reduce vertical gap
+headerDiv.style.padding = "0";        // 🔧 remove padding
+headerDiv.style.fontFamily = "sans-serif";
+headerDiv.style.fontWeight = "bold";
+headerDiv.style.borderBottom = "0.3px solid #bbb";
+
+
+const studentNameDiv = document.createElement("div");
+studentNameDiv.textContent = `Student: ${studentName}`;
+
+const teacherNameDiv = document.createElement("div");
+teacherNameDiv.textContent = `Teacher: ${teacherName}`;
+
+headerDiv.appendChild(studentNameDiv);
+headerDiv.appendChild(teacherNameDiv);
+
+
+  // Create container with header and table
+  const container = document.createElement("div");
+  container.appendChild(headerDiv);
+  container.appendChild(clonedTable);
+  container.style.margin = "0";
+container.style.padding = "0";
+container.style.lineHeight = "1";
+
+
+  // Render offscreen
+  const wrapper = document.createElement("div");
+  wrapper.style.position = "absolute";
+  wrapper.style.left = "-9999px";
+  wrapper.appendChild(container);
+  document.body.appendChild(wrapper);
+
+  // Render to canvas
+  const canvas = await html2canvas(container, {
+    scale: 3.5,
+    backgroundColor: "#fff"
+  });
+
+  const imgData = canvas.toDataURL("image/png");
+  const pdf = new jspdf.jsPDF("p", "pt", "letter");
+  const margin = 15;
+  const imgWidth = pdf.internal.pageSize.getWidth() - margin * 2;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+  pdf.addImage(imgData, "PNG", margin, margin, imgWidth, imgHeight);
+
+  const fileName = studentName.replace(/[^a-zA-Z0-9]/g, "_") + "_Quran_Exam.pdf";
+  pdf.save(fileName);
+
+  document.body.removeChild(wrapper);
+}
+
+     
+      let isAdmin = false;
+      let isExaminer = false;
+      let isTeacher = false;
+      let teacherId = null;
+      let isUpdate = false;
+      let studentMap = {};
+      let surahMap = {};
+      
+      const studentSelect = document.getElementById("studentName");
+      const submitBtn = document.getElementById("submitBtn");
+      const newExamBtn = document.getElementById("newExamBtn");
+      const updateBtn = document.getElementById("updateBtn");
+      const surahTableBody = document.getElementById("surahTableBody");
+      
+
+function ensureOption(select, id, label) {
+  if (!id || !select) return;
+  const exists = [...select.options].some(opt => opt.value == id);
+  if (!exists) {
+    const opt = document.createElement("option");
+    opt.value = id;
+    opt.textContent = label || `ID ${id}`;
+    select.appendChild(opt);
+  }
+}
+
+window.addEventListener("DOMContentLoaded", async () => {
+  await checkUserRole();
+  await setupDropdowns();
+  await setupSurahTable();
+
+  if (isTeacher && !isAdmin && !isExaminer) {
+    submitBtn.style.display = "none";
+    newExamBtn.style.display = "none";
+  }
+});
+
+
+studentSelect.addEventListener("change", async () => {
+  const studentId = studentSelect.value;
+  if (!studentId || !studentMap[studentId]) return;
+
+  const student = studentMap[studentId];
+  const year = new Date().getFullYear();
+
+  const gradeSelect = document.getElementById("grade");
+  const teacherSelect = document.getElementById("teacher");
+  const examinerSelect = document.getElementById("examiner");
+  const examDate = document.getElementById("examDate");
+
+  // ✅ Prefill grade and teacher
+  ensureOption(gradeSelect, student.school_grade, student.school_grade);
+  gradeSelect.value = student.school_grade || "";
+  gradeSelect.disabled = true;
+
+  ensureOption(teacherSelect, student.teacher_id, student.teacher_name);
+  teacherSelect.value = student.teacher_id || "";
+
+  // ✅ Fetch exam data
+  const examData = await fetchExamData(studentId, year);
+  if (!examData || !examData.records) return;
+
+if (examData.exam) {
+  // ✅ Prefill examiner and date from examData.exam
+  examDate.value = examData.exam.exam_date?.split("T")[0] || "";
+  ensureOption(examinerSelect, examData.exam.examiner_id, examData.exam.examiner_name);
+  examinerSelect.value = examData.exam.examiner_id || "";
+
+
+
+    [examDate, examinerSelect, studentSelect].forEach(el => {
+      el.disabled = true;
+      el.style.cursor = "not-allowed";
+      el.style.backgroundColor = "#f3f3f3";
+    });
+
+    // ✅ Fill table with exam data
+    prefillQuranExam(examData.records, {
+  ...student,
+  school_grade: student.school_grade,
+  teacher_name: student.teacher_name,
+  examiner_id: examData.exam.examiner_id,
+  examiner_name: examData.exam.examiner_name,
+  exam_date: examData.exam.exam_date,
+  bonus: examData.exam.bonus,
+  deductions: examData.exam.deductions,
+  final_score: examData.exam.final_score
+});
+
+
+    submitBtn.style.display = "none";
+    updateBtn.style.display = "inline-block";
+    newExamBtn.style.display = "inline-block";
+    isUpdate = true;
+  } else {
+    markUnreachedSurahs(student.last_memorized_surah_id);
+
+    [examDate, examinerSelect].forEach(el => {
+      el.disabled = false;
+      el.style.cursor = "";
+      el.style.backgroundColor = "";
+    });
+
+    submitBtn.style.display = "inline-block";
+    updateBtn.style.display = "none";
+    newExamBtn.style.display = "none";
+    isUpdate = false;
+  }
+});
+
+
+async function checkUserRole() {
+  const res = await fetch("check_user_role.php");
+  const data = await res.json();
+  isAdmin = data.isAdmin;
+  isExaminer = data.isExaminer;
+  isTeacher = data.isTeacher;
+  teacherId = data.teacherId;
+}
+
+function fetchExamData(studentId, year) {
+  return fetch(`get_quran_exam_data.php?student_id=${studentId}&year=${year}`)
+    .then(res => res.json())
+    .then(data => (data.success ? data : null))
+    .catch(err => {
+      console.error("Failed to fetch exam data:", err);
+      return null;
+    });
+}
+
+// ✅ Usage
+async function loadExamData(studentId, year) {
+  const examData = await fetchExamData(studentId, year);
+  if (!examData || !examData.exam) return;
+
+  const examDate = document.getElementById("examDate");
+  const examinerSelect = document.getElementById("examiner");
+
+  examDate.value = examData.exam.exam_date || "";
+
+  const examinerName = examData.exam.examiner_name || `ID ${examData.exam.examiner_id}`;
+  ensureOption(examinerSelect, examData.exam.examiner_id, examinerName);
+  examinerSelect.value = examData.exam.examiner_id || "";
+
+  examDate.disabled = true;
+  examinerSelect.disabled = true;
+  examDate.style.backgroundColor = "#f3f3f3";
+  examinerSelect.style.backgroundColor = "#f3f3f3";
+
+  document.getElementById("bonus").value = examData.exam.bonus || 0;
+  document.getElementById("deductions").value = examData.exam.deductions || 0;
+  document.getElementById("finalscore").value = examData.exam.final_score || "";
+}
+
+
+async function setupDropdowns() {
+  const res = await fetch("fetch_dropdowns.php");
+  const data = await res.json();
+
+  const teacherSelect = document.getElementById("teacher");
+  const examinerSelect = document.getElementById("examiner");
+  const gradeSelect = document.getElementById("grade");
+
+  studentSelect.innerHTML = '<option value="">Select Student</option>';
+  const studentList = isTeacher && !isAdmin && !isExaminer
+    ? data.students.filter(s => s.teacher_id == teacherId)
+    : data.students;
+
+  studentList.forEach(student => {
+    const fullName = student.name || `${student.firstName || ''} ${student.lastName || ''}`.trim();
+    const option = new Option(fullName, student.id);
+    studentSelect.appendChild(option);
+    studentMap[student.id] = student;
+  });
+
+  if (gradeSelect) {
+    const grades = ["Kindergarten"];
+    for (let i = 1; i <= 12; i++) grades.push(`Grade ${i}`);
+    gradeSelect.innerHTML = '<option value="">Select Grade</option>';
+    grades.forEach(g => gradeSelect.appendChild(new Option(g, g)));
+  }
+
+  if (!isTeacher || isAdmin || isExaminer) {
+    teacherSelect.innerHTML = '<option value="">Select Teacher</option>';
+    examinerSelect.innerHTML = '<option value="">Select Examiner</option>';
+    data.teachers.forEach(t => {
+      const name = t.name || `${t.first_name} ${t.last_name}`;
+      teacherSelect.appendChild(new Option(name, t.id));
+    });
+    data.examiners.forEach(e => {
+      const name = e.name || `${e.first_name} ${e.last_name}`;
+      examinerSelect.appendChild(new Option(name, e.id));
+    });
+  } else {
+    teacherSelect.style.display = "none";
+    examinerSelect.style.display = "none";
+    document.querySelector("label[for='teacher']").style.display = "none";
+    document.querySelector("label[for='examiner']").style.display = "none";
+  }
+
+  data.surahs.forEach(s => {
+    const key = s.name.trim().toLowerCase();
+    surahMap[key] = s;
+  });
+}
+
+function markUnreachedSurahs(lastMemorizedId) {
+  let foundLast = false;
+
+  document.querySelectorAll("#surahTableBody tr").forEach(row => {
+    const surahNameRaw = row.dataset.surahName;
+    if (!surahNameRaw) return;
+
+    const surahName = surahNameRaw.trim().toLowerCase();
+    const surahInfo = surahMap[surahName];
+    if (!surahInfo) return;
+
+    const notReached = row.querySelector(".not-reached");
+    const skipped = row.querySelector(".skipped");
+    const inputs = row.querySelectorAll("input[type='number']");
+
+    if (foundLast) {
+      notReached.checked = true;
+      skipped.checked = false;
+      inputs.forEach(i => {
+        i.value = "";
+        i.disabled = true;
+      });
+      row.style.backgroundColor = "#f0f0f0";
+      row.style.color = "#999";
+    } else {
+      notReached.checked = false;
+      skipped.checked = false;
+      inputs.forEach(i => {
+        i.disabled = false;
+      });
+      row.style.backgroundColor = "";
+      row.style.color = "";
+    }
+
+    if (surahInfo.id == lastMemorizedId) foundLast = true;
+  });
+
+  recalculateFinalScore();
+}
+
+function prefillQuranExam(records, meta) {
+  const rowMap = {};
+  document.querySelectorAll("#surahTableBody tr").forEach(row => {
+    const name = row.dataset.surahName?.trim().toLowerCase();
+    if (name) rowMap[name] = row;
+  });
+
+  records.forEach(r => {
+    const row = rowMap[r.surah_name.trim().toLowerCase()];
+    if (!row) return;
+
+    row.querySelector(".ayahs-forgotten").value = r.ayahs_forgotten;
+    row.querySelector(".stuck-errors").value = r.stuck;
+    row.querySelector(".tajweed-errors").value = r.tajweed_errors;
+    row.querySelector(".fluency-score").value = r.fluency;
+    row.querySelector(".weighted-score").value = r.weighted_score;
+    row.querySelector(".not-reached").checked = r.not_reached == 1;
+    row.querySelector(".skipped").checked = r.skipped == 1;
+
+    const disabled = r.not_reached == 1 || r.skipped == 1;
+    row.querySelectorAll("input[type='number']").forEach(input => input.disabled = disabled);
+    row.style.backgroundColor = disabled ? "#f0f0f0" : "";
+    row.style.color = disabled ? "#999" : "";
+  });
+
+  document.getElementById("examDate").value = meta.exam_date?.split("T")[0] || "";
+  document.getElementById("grade").value = meta.school_grade || "";
+  ensureOption(document.getElementById("teacher"), meta.teacher_id, meta.teacher_name);
+  document.getElementById("teacher").value = meta.teacher_id || "";
+  ensureOption(document.getElementById("examiner"), meta.examiner_id, meta.examiner_name);
+  document.getElementById("examiner").value = meta.examiner_id || "";
+  document.getElementById("examiner").disabled = true;
+document.getElementById("examiner").style.backgroundColor = "#f3f3f3";
+document.getElementById("examDate").disabled = true;
+document.getElementById("examDate").style.backgroundColor = "#f3f3f3";
+
+  document.getElementById("bonus").value = meta.bonus || 0;
+  document.getElementById("deductions").value = meta.deductions || 0;
+  document.getElementById("finalscore").value = meta.final_score || "";
+
+  isUpdate = true;
+  submitBtn.style.display = "none";
+  updateBtn.style.display = "inline-block";
+
+  recalculateFinalScore();
+}
+
+   
+      async function setupSurahTable() {
+        const res = await fetch("fetch_surahs.php");
+        const data = await res.json();
+        const tbody = surahTableBody;
+        tbody.innerHTML = "";
+      
+        data.surahs.forEach(surah => {
+          const row = document.createElement("tr");
+          row.dataset.surahName = surah.name;
+          row.dataset.surahNumber = surah.surah_number;
+      
+          row.innerHTML = `
+            <td>
+              <div>${surah.name}</div>
+              <div style="font-size: 11px; color: #555;">Total Ayaat: ${surah.total_ayahs}</div>
+            </td>
+            <td><input type="number" class="ayahs-forgotten" min="0" max="${surah.total_ayahs}" /></td>
+            <td><input type="number" class="stuck-errors" min="0" style="width:50px" /></td>
+            <td><input type="number" class="tajweed-errors" min="0" /></td>
+            <td><input type="number" class="fluency-score" min="0" max="100" /></td>
+            <td><input type="number" class="weighted-score" readonly /></td>
+            <td><input type="checkbox" class="not-reached" /></td>
+            <td><input type="checkbox" class="skipped" /></td>
+          `;
+          tbody.appendChild(row);
+      
+          const forgottenInput = row.querySelector(".ayahs-forgotten");
+          const stuckInput = row.querySelector(".stuck-errors");
+          const tajweedInput = row.querySelector(".tajweed-errors");
+          const fluencyInput = row.querySelector(".fluency-score");
+          const weightedInput = row.querySelector(".weighted-score");
+          const notReached = row.querySelector(".not-reached");
+          const skipped = row.querySelector(".skipped");
+
+      
+          function updateWeighted() {
+            const totalAyahs = surah.total_ayahs;
+            const forgotten = parseInt(forgottenInput.value) || 0;
+            const tajweed = parseInt(tajweedInput.value) || 0;
+            const fluency = parseFloat(fluencyInput.value) || 0;
+            const stuck = parseInt(stuckInput.value) || 0;
+      
+            const score = calculateWeightedScore({ totalAyahs, forgotten, tajweed, fluency, stuck });
+            weightedInput.value = score;
+            recalculateFinalScore();
+          }
+      
+          [forgottenInput, stuckInput, tajweedInput, fluencyInput].forEach(input =>
+            input.addEventListener("input", updateWeighted)
+          );
+      
+          notReached.addEventListener("change", () => {
+            const disabled = notReached.checked;
+            if (disabled) skipped.checked = false;
+      
+            [forgottenInput, stuckInput, tajweedInput, fluencyInput].forEach(input => {
+              input.disabled = disabled;
+              if (disabled) input.value = "";
+            });
+            weightedInput.disabled = disabled;
+            weightedInput.value = disabled ? "" : weightedInput.value;
+            row.style.backgroundColor = disabled ? "#f0f0f0" : "";
+            row.style.color = disabled ? "#999" : "";
+            recalculateFinalScore();
+          });
+      
+          skipped.addEventListener("change", () => {
+            const disabled = skipped.checked;
+            if (disabled) notReached.checked = false;
+      
+            [forgottenInput, stuckInput, tajweedInput, fluencyInput].forEach(input => {
+              input.disabled = disabled;
+              input.value = disabled ? "0" : input.value;
+            });
+            weightedInput.disabled = disabled;
+            weightedInput.value = disabled ? "0.00" : weightedInput.value;
+            row.style.backgroundColor = disabled ? "#f0f0f0" : "";
+            row.style.color = disabled ? "#999" : "";
+            recalculateFinalScore();
+          });
+        });
+
+        const totalRow = document.createElement("tr");
+        totalRow.innerHTML = `
+          <td><strong>Totals</strong></td>
+          <td id="totalForgotten">0</td>
+          <td id="totalStuck">0</td>
+          <td id="totalTajweed">0</td>
+          <td colspan="4"></td>
+        `;
+        tbody.appendChild(totalRow);
+        
+
+       ["Bonus", "Deductions", "Final Score"].forEach(label => {
+  const id = label === "Final Score" ? "finalscore" : label.toLowerCase();
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td><strong>${label}</strong></td>
+    <td colspan="7"><input type="number" id="${id}" ${label === "Final Score" ? "readonly" : ""} /></td>
+  `;
+  tbody.appendChild(row);
+});
+
+// ✅ Now safely attach listeners after DOM is ready
+setTimeout(() => {
+  const bonusInput = document.getElementById("bonus");
+  const deductionsInput = document.getElementById("deductions");
+
+  if (bonusInput) bonusInput.addEventListener("input", recalculateFinalScore);
+  if (deductionsInput) deductionsInput.addEventListener("input", recalculateFinalScore);
+}, 0);
+
+      
+        document.getElementById("bonus").addEventListener("input", recalculateFinalScore);
+        document.getElementById("deductions").addEventListener("input", recalculateFinalScore);
+      }
+      
+      function calculateWeightedScore({ totalAyahs, forgotten, tajweed, fluency, stuck }) {
+        const memorization = totalAyahs > 0 ? ((totalAyahs - forgotten) / totalAyahs) * 100 : 0;
+        const tajweedScore = Math.max(0, 100 - (tajweed * 2));
+        const stuckScore = Math.max(0, 100 - (stuck * 2));
+        return (
+          0.6 * memorization +
+          0.2 * tajweedScore +
+          0.1 * fluency +
+          0.1 * stuckScore
+        ).toFixed(2);
+      }
+      
+      function recalculateFinalScore() {
+        const rows = document.querySelectorAll("#surahTableBody tr");
+        let totalWeighted = 0;
+        let countIncluded = 0;
+        let totalForgotten = 0;
+        let totalStuck = 0;
+        let totalTajweed = 0;
+        
+        rows.forEach(row => {
+          const forgotten = parseInt(row.querySelector(".ayahs-forgotten")?.value) || 0;
+          const stuck = parseInt(row.querySelector(".stuck-errors")?.value) || 0;
+          const tajweed = parseInt(row.querySelector(".tajweed-errors")?.value) || 0;
+        
+          if (!row.querySelector(".not-reached")?.checked && !row.querySelector(".skipped")?.checked) {
+            totalForgotten += forgotten;
+            totalStuck += stuck;
+            totalTajweed += tajweed;
+          }
+        });
+        
+        document.getElementById("totalForgotten").textContent = totalForgotten;
+        document.getElementById("totalStuck").textContent = totalStuck;
+        document.getElementById("totalTajweed").textContent = totalTajweed;
+        
+
+
+        rows.forEach(row => {
+  const weightedInput = row.querySelector(".weighted-score");
+  const notReached = row.querySelector(".not-reached");
+  const skipped = row.querySelector(".skipped");
+
+  // ✅ Only skip if "Not Reached" is checked
+  if (!weightedInput || notReached?.checked) return;
+
+  const value = parseFloat(weightedInput.value);
+
+  // ✅ Even if skipped, include it (value might be 0)
+  if (!isNaN(value)) {
+    totalWeighted += value;
+    countIncluded++;
+  }
+});
+
+      
+        const bonus = parseFloat(document.getElementById("bonus")?.value) || 0;
+        const deductions = parseFloat(document.getElementById("deductions")?.value) || 0;
+        const avg = countIncluded > 0 ? totalWeighted / countIncluded : 0;
+        let finalScore = avg + bonus - deductions;
+        finalScore = Math.max(0, Math.min(100, finalScore));
+        document.getElementById("finalscore").value = finalScore.toFixed(2);
+      }
+
+      document.getElementById("newExamBtn").addEventListener("click", () => {
+  // ✅ Unlock and reset form fields
+  const examDate = document.getElementById("examDate");
+  const examiner = document.getElementById("examiner");
+  const bonus = document.getElementById("bonus");
+  const deductions = document.getElementById("deductions");
+  const finalScore = document.getElementById("finalscore");
+
+  examDate.value = "";
+  bonus.value = "";
+  deductions.value = "";
+  finalScore.value = "";
+
+  examDate.disabled = false;
+  examiner.disabled = false;
+  studentSelect.disabled = false;
+
+  examDate.style.backgroundColor = "";
+  examiner.style.backgroundColor = "";
+  studentSelect.style.backgroundColor = "";
+  studentSelect.style.cursor = "";
+
+  // ✅ Reset table rows
+  document.querySelectorAll("#surahTableBody tr").forEach(row => {
+    row.querySelectorAll("input[type='number']").forEach(input => {
+      input.value = "";
+      input.disabled = false;
+    });
+
+    const notReached = row.querySelector(".not-reached");
+    const skipped = row.querySelector(".skipped");
+
+    if (notReached) notReached.checked = false;
+    if (skipped) skipped.checked = false;
+
+    row.style.backgroundColor = "";
+    row.style.color = "";
+  });
+
+  // ✅ Reset score & button states
+  recalculateFinalScore();
+
+  submitBtn.style.display = "inline-block";
+  updateBtn.style.display = "none";
+  newExamBtn.style.display = "none";
+  isUpdate = false;
+});
+
+      
+      submitBtn.addEventListener("click", () => {
+        handleSubmitOrUpdate("submit");
+      });
+      
+      updateBtn.addEventListener("click", () => {
+        handleSubmitOrUpdate("update");
+      });
+
+      
+     async function handleSubmitOrUpdate(mode) {
+  const studentId = studentSelect.value;
+  const grade = document.getElementById("grade")?.value || "";
+  const teacherId = document.getElementById("teacher")?.value || "";
+  const examinerId = document.getElementById("examiner")?.value || "";
+  const examDate = document.getElementById("examDate")?.value || "";
+  const bonus = parseFloat(document.getElementById("bonus")?.value) || 0;
+  const deductions = parseFloat(document.getElementById("deductions")?.value) || 0;
+  const finalScore = parseFloat(document.getElementById("finalscore")?.value) || 0;
+  const year = new Date().getFullYear();
+
+  if (!studentId || !teacherId || !examinerId || !examDate) {
+    alert("❌ Please complete all required fields before submitting.");
+    return;
+  }
+
+  const surahData = [];
+  document.querySelectorAll("#surahTableBody tr").forEach(row => {
+    const name = row.dataset.surahName;
+    if (!name || name === "Totals" || name.includes("Score")) return;
+
+    const forgotten = parseInt(row.querySelector(".ayahs-forgotten")?.value) || 0;
+    const stuck = parseInt(row.querySelector(".stuck-errors")?.value) || 0;
+    const tajweed = parseInt(row.querySelector(".tajweed-errors")?.value) || 0;
+    const fluency = parseFloat(row.querySelector(".fluency-score")?.value) || 0;
+    const weighted = parseFloat(row.querySelector(".weighted-score")?.value) || 0;
+    const notReached = row.querySelector(".not-reached")?.checked ? 1 : 0;
+    const skipped = row.querySelector(".skipped")?.checked ? 1 : 0;
+    const surahInfo = surahMap[name.trim().toLowerCase()] || {};
+    const totalAyahs = surahInfo.total_ayahs || 0;
+
+    surahData.push({
+      surah_name: name,
+      total_ayahs: totalAyahs,
+      ayahs_forgotten: forgotten,
+      stuck_errors: stuck,
+      tajweed_errors: tajweed,
+      fluency_score: fluency,
+      weighted_score: weighted,
+      not_reached: notReached,
+      skipped: skipped
+    });
+  });
+
+  const payload = {
+    mode,
+    student_id: studentId,
+    teacher_id: teacherId,
+    examiner_id: examinerId,
+    exam_date: examDate,
+    school_year: year,
+    bonus,
+    deductions,
+    final_score: finalScore,
+    grade,
+    surahs: surahData
+  };
+
+  try {
+    const res = await fetch("submit_quran_exam.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const text = await res.text();
+    let result;
+
+    try {
+      result = JSON.parse(text);
+    } catch {
+      console.error("❌ Invalid JSON returned:\n", text);
+      alert("Server returned an unexpected response. Check console.");
+      return;
+    }
+
+    if (result.success) {
+      alert(mode === "submit" ? "✅ Exam submitted successfully." : "✅ Exam updated successfully.");
+      isUpdate = true;
+      submitBtn.style.display = "none";
+      updateBtn.style.display = "inline-block";
+      newExamBtn.style.display = "inline-block";
+    } else {
+      alert("❌ Submission failed: " + result.message);
+      console.warn("Server error detail:", result.error || "No details provided");
+    }
+
+  } catch (err) {
+    console.error("❌ Network or fetch error:", err);
+    alert("Failed to connect to the server. Please try again.");
+  }
+}
+
+
+</script> 
+</body>
+</html>

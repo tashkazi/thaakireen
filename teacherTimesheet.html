@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thaakireen - Time-Sheet</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding-bottom: 60px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f9f7;
+    }
+    header, footer {
+      background-color: #387a5f;
+      color: #fff;
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+    }
+    header {
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer {
+      bottom: 0;
+      text-align: center;
+    }
+    #logo img {
+      max-height: 50px;
+    }
+    #menu-container ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-right: 50px;
+      padding: 0;
+    }
+    #menu-container a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 120px auto 40px;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    label {
+      font-weight: bold;
+    }
+    select {
+      margin: 10px 0;
+      padding: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    th {
+      background-color: #d0e7de;
+    }
+    .actions {
+      margin-top: 20px;
+      text-align: right;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #387a5f;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    button:hover {
+      background-color: #2f5d4e;
+    }
+    .total {
+      text-align: right;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+    @media print {
+      body * { visibility: hidden; }
+      #pdfExportContent, #pdfExportContent * { visibility: visible; }
+      #pdfExportContent { position: absolute; left: 0; top: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="logo">
+    <img src="uploads/Logo.png" alt="Thaakireen Logo" />
+  </div>
+  <div id="menu-container">
+    <ul>
+      <li><a href="Homepage.html">Home</a></li>
+      <li><a href="Profile.html">My Profile</a></li>
+      <li><a href="Login.html">Logout</a></li>
+    </ul>
+  </div>
+</header>
+
+<div class="container">
+  <label for="weekSelector">View Previous Weeks:</label>
+  <select id="weekSelector" onchange="loadSelectedWeek()"></select>
+
+  <div id="pdfExportContent">
+    <h1 id="userHeader">🕒 Weekly Time Sheet - <span id="userName"></span></h1>
+
+    <table id="timeSheetTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Day</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Hours Worked</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="total">
+      Total Hours: <span id="totalHours">0</span>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button onclick="saveTimeSheet()">Save</button>
+    <button onclick="downloadTable()">Download Table</button>
+    <button onclick="viewMonthly()">View Monthly Time Sheet</button>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2024 Thaakireen. All rights reserved.</p>
+</footer>
+
+<script>
+let currentUserName = "User";
+
+fetch("get_logged_in_user.php")
+  .then(res => res.json())
+  .then(data => {
+    if (data.success && data.name) {
+      currentUserName = data.name;
+      document.getElementById("userName").textContent = currentUserName;
+    }
+  });
+
+
+const holidays = [
+  "2024-01-01", // New Year's Day
+  "2024-02-19", // Family Day (3rd Monday of February)
+  "2024-03-29", // Good Friday
+  "2024-05-20", // Victoria Day (Monday before May 25)
+  "2024-07-01", // Canada Day
+  "2024-08-05", // BC Day (1st Monday in August)
+  "2024-09-02", // Labour Day (1st Monday in September)
+  "2024-09-30", // National Day for Truth and Reconciliation
+  "2024-10-14", // Thanksgiving Day (2nd Monday in October)
+  "2024-11-11", // Remembrance Day
+  "2024-12-25", // Christmas Day
+  "2024-12-26"  // Boxing Day (optional for most workplaces, but often included)
+];
+
+
+  function getCurrentMonday() {
+    const today = new Date();
+    const day = today.getDay();
+    const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(today.setDate(diff));
+  }
+
+  function getWeekStartString(date) {
+    return date.toISOString().split('T')[0];
+  }
+
+function generateWeekOptions(weeksBack = 52) {
+  const select = document.getElementById("weekSelector");
+  const currentMonday = getCurrentMonday();
+  select.innerHTML = ''; // Clear old options
+
+  for (let i = 0; i < weeksBack; i++) {
+    const monday = new Date(currentMonday);
+    monday.setDate(currentMonday.getDate() - (i * 7));
+    const value = getWeekStartString(monday);
+    const option = new Option(`Week of ${value}`, value);
+    select.appendChild(option);
+  }
+
+  select.value = getWeekStartString(currentMonday);
+}
+document.addEventListener("DOMContentLoaded", () => {
+  generateWeekOptions(52); // Show past 52 weeks
+  loadSelectedWeek();
+});
+
+
+  function loadSelectedWeek() {
+    const weekStart = document.getElementById("weekSelector").value;
+    fetch(`load_timesheet.php?week_start=${weekStart}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.entries.length > 0) {
+          prefillTimeSheet(data.entries);
+        } else {
+          generateWeekRows(new Date(weekStart));
+        }
+      })
+      .catch(() => {
+        generateWeekRows(new Date(weekStart));
+      });
+  }
+
+  function generateWeekRows(monday) {
+    const tbody = document.querySelector("#timeSheetTable tbody");
+    tbody.innerHTML = "";
+    const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+    for (let i = 0; i < 5; i++) {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
+      const dateStr = date.toISOString().split('T')[0];
+      const dayStr = weekdays[i];
+      const isHoliday = holidays.includes(dateStr);
+
+      const row = document.createElement("tr");
+      if (isHoliday) {
+        row.innerHTML = `
+          <td>${dateStr}</td>
+          <td>${dayStr}</td>
+          <td colspan="3" style="color:red">Holiday</td>
+          <td>--</td>
+        `;
+      } else {
+        row.innerHTML = `
+          <td>${dateStr}</td>
+          <td>${dayStr}</td>
+          <td><input type="time" onchange="updateHours(this)"></td>
+          <td><input type="time" onchange="updateHours(this)"></td>
+          <td class="worked-hours">0</td>
+          <td><label><input type="checkbox" onchange="markAbsent(this)"> Absent</label></td>
+        `;
+      }
+      tbody.appendChild(row);
+    }
+    calculateTotal();
+  }
+
+function viewMonthly() {
+  window.location.href = "viewMonthlyTimesheet.html";
+}
+
+
+  function markAbsent(checkbox) {
+    const row = checkbox.closest("tr");
+    const inputs = row.querySelectorAll('input[type="time"]');
+    const hoursCell = row.querySelector(".worked-hours");
+    if (checkbox.checked) {
+      inputs.forEach(input => input.disabled = true);
+      hoursCell.textContent = "0";
+    } else {
+      inputs.forEach(input => input.disabled = false);
+    }
+    calculateTotal();
+  }
+function prefillTimeSheet(entries) {
+  const tbody = document.querySelector("#timeSheetTable tbody");
+  tbody.innerHTML = "";
+
+  entries.forEach(entry => {
+    const isHoliday = holidays.includes(entry.date);
+    const isAbsent = entry.is_absent == 1;
+    const row = document.createElement("tr");
+
+    if (isHoliday) {
+      row.innerHTML = `
+        <td>${entry.date}</td>
+        <td>${entry.day}</td>
+        <td colspan="3" style="color:red">Holiday</td>
+        <td>--</td>
+      `;
+    } else {
+      row.innerHTML = `
+        <td>${entry.date}</td>
+        <td>${entry.day}</td>
+        <td><input type="time" value="${entry.start_time}" onchange="updateHours(this)" ${isAbsent ? "disabled" : ""}></td>
+        <td><input type="time" value="${entry.end_time}" onchange="updateHours(this)" ${isAbsent ? "disabled" : ""}></td>
+   <td class="worked-hours">${entry.start_time && entry.end_time ? parseFloat(entry.hours_worked).toFixed(2) : ''}</td>
+
+        <td>
+          <label>
+            <input type="checkbox" onchange="markAbsent(this)" ${isAbsent ? "checked" : ""}> Absent
+          </label>
+        </td>
+      `;
+    }
+
+    tbody.appendChild(row);
+  });
+
+  calculateTotal();
+}
+
+function markAbsent(checkbox) {
+  const row = checkbox.closest("tr");
+  const inputs = row.querySelectorAll('input[type="time"]');
+  const hoursCell = row.querySelector(".worked-hours");
+  if (checkbox.checked) {
+    inputs.forEach(input => input.disabled = true);
+    hoursCell.textContent = "0";
+  } else {
+    inputs.forEach(input => input.disabled = false);
+  }
+  calculateTotal();
+}
+
+function updateHours(input) {
+  const row = input.closest('tr');
+  const start = row.querySelectorAll('input[type="time"]')[0]?.value;
+  const end = row.querySelectorAll('input[type="time"]')[1]?.value;
+  const hoursCell = row.querySelector('.worked-hours');
+
+  if (start && end) {
+    const startDate = new Date(`1970-01-01T${start}:00`);
+    const endDate = new Date(`1970-01-01T${end}:00`);
+    const diff = (endDate - startDate) / (1000 * 60 * 60);
+    const hours = diff > 0 ? diff.toFixed(2) : 0;
+    hoursCell.textContent = hours;
+  }
+  calculateTotal();
+}
+
+function calculateTotal() {
+  const rows = document.querySelectorAll(".worked-hours");
+  let total = 0;
+  rows.forEach(cell => {
+    total += parseFloat(cell.textContent);
+  });
+  document.getElementById("totalHours").textContent = total.toFixed(2);
+}
+function downloadTable() {
+  const element = document.getElementById("pdfExportContent");
+  const opt = {
+    margin:       0.5,
+    filename:     `${currentUserName.replace(/\s+/g, '_')}_Timesheet.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(element).save();
+}
+
+
+function saveTimeSheet() {
+  const weekStart = document.getElementById("weekSelector").value;
+  const rows = document.querySelectorAll("#timeSheetTable tbody tr");
+  const entries = [];
+
+  rows.forEach(row => {
+    const date = row.cells[0]?.textContent;
+    const day = row.cells[1]?.textContent;
+    const timeInputs = row.querySelectorAll('input[type="time"]');
+    const absentCheckbox = row.querySelector('input[type="checkbox"]');
+    const start = timeInputs[0]?.value || "";
+    const end = timeInputs[1]?.value || "";
+    const hours = row.querySelector('.worked-hours')?.textContent || "0";
+    const isAbsent = absentCheckbox && absentCheckbox.checked ? 1 : 0;
+
+    if (date && day) {
+      entries.push({
+        date,
+        day,
+        start_time: start,
+        end_time: end,
+        hours_worked: parseFloat(hours),
+        is_absent: isAbsent
+      });
+    }
+  });
+
+  fetch("save_timesheet.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ week_start: weekStart, entries })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("Time sheet saved successfully.");
+      } else {
+        alert("Failed to save: " + data.message);
+      }
+    })
+    .catch(() => alert("Server error. Could not save time sheet."));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  generateWeekOptions();
+  loadSelectedWeek();
+});
+
+</script>
+
+</body>
+</html>

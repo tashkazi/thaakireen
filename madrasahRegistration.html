@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register for Thaakireen Madrasah</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Great+Vibes&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(to bottom right, #e3f6ef, #fef6e4);
+      padding: 40px;
+      color: #333;
+    }
+
+    h2 {
+      font-family: 'Great Vibes', cursive;
+      text-align: center;
+      font-size: 3em;
+      color: #2e5e4e;
+      margin-bottom: 10px;
+    }
+
+    .tagline {
+      text-align: center;
+      font-size: 1.2em;
+      color: #555;
+      margin-bottom: 30px;
+      font-style: italic;
+    }
+
+    form {
+      max-width: 700px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      border: 1px solid #bce3d7;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      font-weight: 600;
+      color: #2e5e4e;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 6px;
+      font-size: 1em;
+      background-color: #f9f9f9;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #387a5f;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 12px 24px;
+      background-color: #387a5f;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #2e5e4e;
+      transform: translateY(-2px);
+    }
+
+    .success-message {
+      text-align: center;
+      color: #2e5e4e;
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+
+    .form-icon {
+      text-align: center;
+      font-size: 60px;
+      color: #387a5f;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-icon">📚</div>
+  <h2>Join Thaakireen Madrasah</h2>
+  <div class="tagline">Inspire hearts with knowledge, character, and faith 🌙</div>
+
+  <form id="registrationForm">
+    <label>Student First Name:</label>
+    <input type="text" name="firstName" required>
+
+    <label>Student Last Name:</label>
+    <input type="text" name="lastName" required>
+
+    <label>School Grade:</label>
+    <input type="text" name="school_grade">
+
+    <label>Gender:</label>
+    <select name="gender" required>
+      <option value="">-- Select --</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+
+    <label>Date of Birth:</label>
+    <input type="date" name="date_of_birth">
+
+    <label>Address:</label>
+    <input type="text" name="address">
+
+    <label>Parent Name:</label>
+    <input type="text" name="parent1_name">
+
+    <label>Parent Phone:</label>
+    <input type="text" name="parent1_phone">
+
+    <label>Parent Email:</label>
+    <input type="email" name="parent1_email">
+
+    <label>Medical Conditions:</label>
+    <input type="text" name="medical_conditions">
+
+    <label>Allergies:</label>
+    <input type="text" name="allergies">
+
+    <button type="submit">Submit Registration</button>
+    <div class="success-message" id="successMessage" style="display:none;"></div>
+  </form>
+
+  <script>
+    document.getElementById("registrationForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const formData = Object.fromEntries(new FormData(this).entries());
+
+      fetch("submit_madrasah_registration.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      })
+      .then(res => res.json())
+      .then(data => {
+        const message = document.getElementById("successMessage");
+        if (data.success) {
+          this.reset();
+          message.textContent = "🎉 Thank you! Your registration has been submitted.";
+          message.style.display = "block";
+        } else {
+          message.textContent = "⚠️ Error: " + data.message;
+          message.style.display = "block";
+        }
+      })
+      .catch(() => {
+        const message = document.getElementById("successMessage");
+        message.textContent = "⚠️ Server error. Please try again later.";
+        message.style.display = "block";
+      });
+    });
+  </script>
+
+</body>
+</html>

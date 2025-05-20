@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thaakireen - Employee Hours</title>
+  <style>
+    body {
+      margin: 0;
+      padding-bottom: 60px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f9f7;
+    }
+
+    header, footer {
+      background-color: #387a5f;
+      color: #fff;
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    header {
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer {
+      bottom: 0;
+      text-align: center;
+    }
+
+    #logo img {
+      max-height: 50px;
+    }
+
+    #menu-container ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-right: 50px;
+      padding: 0;
+    }
+
+    #menu-container a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 120px auto 40px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2e5e4e;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    #monthSelect {
+      display: block;
+      padding: 8px;
+      margin-bottom: 20px;
+      font-size: 1em;
+      width: 200px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+
+    th {
+      background-color: #d0e7de;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="logo">
+    <img src="uploads/Logo.png" alt="Thaakireen Logo">
+  </div>
+  <div id="menu-container">
+    <ul>
+      <li><a href="Homepage.html">Home</a></li>
+      <li><a href="Profile.html">My Profile</a></li>
+      <li><a href="Login.html">Logout</a></li>
+    </ul>
+  </div>
+</header>
+
+<div class="container">
+  <h1>📊 Employee Hours and Attendance</h1>
+
+  <label for="monthSelect">Select Month:</label>
+  <input type="month" id="monthSelect" onchange="loadEmployeeHours()">
+
+  <table id="employeeHoursTable">
+    <thead>
+      <tr>
+        <th>Employee Name</th>
+        <th>Total Hours Worked</th>
+        <th>Days Present</th>
+        <th>Days Absent</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Data will populate here -->
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  <p>&copy; 2024 Thaakireen. All rights reserved.</p>
+</footer>
+
+<script>
+function loadEmployeeHours() {
+  const month = document.getElementById("monthSelect").value;
+  if (!month) return;
+
+  fetch(`get_employee_hours.php?month=${month}`)
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.querySelector("#employeeHoursTable tbody");
+      tbody.innerHTML = "";
+
+      if (data.success && Array.isArray(data.records) && data.records.length > 0) {
+        data.records.forEach(emp => {
+          const totalHours = isNaN(emp.total_hours) ? "0.00" : parseFloat(emp.total_hours).toFixed(2);
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${emp.name}</td>
+            <td>${totalHours}</td>
+            <td>${emp.days_present}</td>
+            <td>${emp.days_absent}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } else {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td colspan="4">No records found for selected month.</td>`;
+        tbody.appendChild(row);
+      }
+    })
+    .catch(err => {
+      alert("Error fetching employee hours.");
+      console.error(err);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const today = new Date();
+  document.getElementById("monthSelect").value = today.toISOString().slice(0, 7);
+  loadEmployeeHours();
+});
+</script>
+
+</body>
+</html>

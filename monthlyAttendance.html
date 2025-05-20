@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thaakireen - Monthly Attendance</title>
+  <style>
+    body {
+      margin: 0;
+      padding-bottom: 80px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f9f7;
+    }
+
+    header, footer {
+      background-color: #387a5f;
+      color: #fff;
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    header {
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer {
+      bottom: 0;
+      text-align: center;
+    }
+
+    #logo img {
+      max-height: 50px;
+    }
+
+    #menu-container ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-right: 50px;
+      padding: 0;
+    }
+
+    #menu-container a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    main {
+      padding: 100px 20px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    #adminControls {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 25px;
+      justify-content: center;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    select, input[type="month"], button {
+      padding: 6px 10px;
+      font-size: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #e4f1ec;
+    }
+
+    td:first-child, th:first-child {
+  text-align: left;
+  padding-left: 15px;
+}
+
+
+    #summaryBox {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    #summaryBox h3 {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    #summaryBox p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="logo">
+    <img src="uploads/Logo.png" alt="Thaakireen Logo">
+  </div>
+  <div id="menu-container">
+    <ul>
+      <li><a href="Homepage.html">Home</a></li>
+      <li><a href="Profile.html">My Profile</a></li>
+      <li><a href="Login.html">Logout</a></li>
+    </ul>
+  </div>
+</header>
+
+<main>
+  <h1>Monthly Attendance Summary</h1>
+
+  <div style="text-align: center; margin-bottom: 20px;">
+    <a href="recordAttendance.html">
+      <button style="padding: 8px 14px; font-size: 14px; font-weight: bold;">
+        📅 View Weekly Attendance
+      </button>
+    </a>
+  </div>
+
+  <div id="adminControls">
+    <label for="teacherSelect">Teacher:</label>
+    <select id="teacherSelect" style="display: none;"></select>
+
+    <label for="monthSelect">Month:</label>
+    <input type="month" id="monthSelect" />
+
+    <button onclick="loadMonthlySummary()">View Summary</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Student Name</th>
+        <th>Present</th>
+        <th>Absent</th>
+        <th>Late</th>
+        <th>Excused</th>
+      </tr>
+    </thead>
+    <tbody id="summaryBody"></tbody>
+  </table>
+
+  <div id="summaryBox" style="display: none;">
+    <h3>Class Attendance Summary</h3>
+    <p><strong>Total Students:</strong> <span id="totalStudents"></span></p>
+    <p><strong>Total Present Days:</strong> <span id="totalPresent"></span></p>
+    <p><strong>Total Absent Days:</strong> <span id="totalAbsent"></span></p>
+    <p><strong>Total Late Days:</strong> <span id="totalLate"></span></p>
+    <p><strong>Total Excused Days:</strong> <span id="totalExcused"></span></p>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2024 Thaakireen. All rights reserved.</p>
+</footer>
+
+<script>
+let isAdmin = false;
+let currentUserId = null;
+
+window.addEventListener("DOMContentLoaded", async () => {
+const roleRes = await fetch("check_user_role.php");
+const roleData = await roleRes.json(); // ✅ fixed
+isAdmin = roleData.isAdmin;
+currentUserId = roleData.teacherId;
+
+  isAdmin = roleData.isAdmin;
+  currentUserId = roleData.teacherId; // ✅ use consistently
+
+  // Prefill current month
+  const monthInput = document.getElementById("monthSelect");
+  const now = new Date();
+  monthInput.value = now.toISOString().slice(0, 7);
+
+  if (isAdmin) {
+    // Admin: show and populate teacher dropdown
+    const teacherSelect = document.getElementById("teacherSelect");
+    teacherSelect.style.display = "inline-block";
+
+    const res = await fetch("fetch_dropdowns.php");
+    const data = await res.json();
+    data.teachers.forEach(t => {
+      const option = document.createElement("option");
+      option.value = t.id;
+      option.textContent = t.name;
+      teacherSelect.appendChild(option);
+    });
+
+    // Load summary if teacher already selected
+    document.getElementById("monthSelect").addEventListener("change", loadMonthlySummary);
+    document.getElementById("teacherSelect").addEventListener("change", loadMonthlySummary);
+
+  } else {
+    // Teacher: hide dropdown and auto-load
+    document.getElementById("teacherSelect").style.display = "none";
+    document.getElementById("monthSelect").addEventListener("change", loadMonthlySummary);
+    loadMonthlySummary();
+  }
+});
+
+async function loadMonthlySummary() {
+  const month = document.getElementById("monthSelect").value;
+  const selectedTeacherId = isAdmin
+    ? document.getElementById("teacherSelect").value
+    : currentUserId;
+
+  if (!selectedTeacherId || !month) {
+    if (isAdmin) {
+      alert("Please select a month and teacher.");
+    }
+    return;
+  }
+
+  const res = await fetch(`monthlySummary.php?teacher_id=${selectedTeacherId}&month=${month}`);
+  const data = await res.json();
+
+  const tbody = document.getElementById("summaryBody");
+  const summaryBox = document.getElementById("summaryBox");
+  tbody.innerHTML = "";
+  summaryBox.style.display = "none";
+
+  if (!data.success || !data.data.length) {
+    tbody.innerHTML = "<tr><td colspan='5'>No attendance data found for this month.</td></tr>";
+    return;
+  }
+
+  // Fill table
+  let totalPresent = 0, totalAbsent = 0, totalLate = 0, totalExcused = 0;
+
+  data.data.forEach(s => {
+    totalPresent += parseInt(s.total_present || 0);
+    totalAbsent += parseInt(s.total_absent || 0);
+    totalLate += parseInt(s.total_late || 0);
+    totalExcused += parseInt(s.total_excused || 0);
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${s.student_name}</td>
+      <td>${s.total_present}</td>
+      <td>${s.total_absent}</td>
+      <td>${s.total_late}</td>
+      <td>${s.total_excused}</td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  // Fill summary box
+  document.getElementById("totalStudents").textContent = data.data.length;
+  document.getElementById("totalPresent").textContent = totalPresent;
+  document.getElementById("totalAbsent").textContent = totalAbsent;
+  document.getElementById("totalLate").textContent = totalLate;
+  document.getElementById("totalExcused").textContent = totalExcused;
+  summaryBox.style.display = "block";
+}
+</script>
+
+
+
+</body>
+</html>

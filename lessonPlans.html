@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thaakireen - Lesson Planner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #f8fbfd, #e8f3f6);
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 29px, #d3e4eb 30px),
+                        repeating-linear-gradient(90deg, transparent, transparent 29px, #d3e4eb 30px);
+    }
+
+    header, footer {
+      background-color: #387a5f;
+      color: #fff;
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    header { top: 0; display: flex; justify-content: space-between; align-items: center; }
+    footer { bottom: 0; text-align: center; }
+
+    #logo img { max-height: 50px; }
+    #menu-container ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      margin-right: 50px;
+      padding: 0;
+    }
+    #menu-container a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    form {
+      max-width: 850px;
+      margin: 120px auto 50px;
+      background: white;
+      padding: 40px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+      border-radius: 12px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      font-family: 'Patrick Hand', cursive;
+      text-align: left;
+      color: #4a6f74;
+      margin-bottom: 30px;
+    }
+
+    .flex-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    label {
+      font-size: 14px;
+      color: #444;
+      margin-bottom: 5px;
+    }
+
+    input, select, textarea {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 16px;
+      padding: 8px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+      background: #fff;
+      box-shadow: inset 0 0 2px #999;
+      resize: vertical;
+    }
+
+    textarea { min-height: 70px; }
+    .full-width { width: 100%; margin-bottom: 20px; }
+
+    .btns {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    button {
+      padding: 10px 25px;
+      font-size: 16px;
+      margin: 0 10px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .save-btn {
+      background: #387a5f;
+      color: white;
+    }
+
+    .print-btn {
+      background: #e7f3ec;
+      color: #387a5f;
+      border: 2px solid #387a5f;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="logo"><img src="uploads/Logo.png" alt="Thaakireen Logo"></div>
+  <div id="menu-container">
+    <ul>
+      <li><a href="Homepage.html">Home</a></li>
+      <li><a href="Profile.html">My Profile</a></li>
+      <li><a href="Login.html">Logout</a></li>
+    </ul>
+  </div>
+</header>
+
+<form id="lessonPlanForm">
+  <h1>Lesson Plan</h1>
+
+  <div class="flex-row">
+    <div class="field-group">
+      <label for="grade">Grade:</label>
+      <input type="text" id="grade" required />
+    </div>
+    <div class="field-group">
+      <label for="date">Date:</label>
+      <input type="date" id="date" required />
+    </div>
+  </div>
+
+  <div class="field-group full-width">
+    <label for="subject">Subject:</label>
+    <select id="subject" required>
+      <option value="">-- Select --</option>
+      <option>Qur’an Memorization</option>
+      <option>Qur’an Recitation</option>
+      <option>Tajweed</option>
+      <option>Dua</option>
+      <option>Fiqh</option>
+      <option>Aqaaid</option>
+      <option>Ahadeeth</option>
+      <option>Taareekh / History</option>
+      <option>Akhlaaq / Adaab</option>
+    </select>
+  </div>
+
+  <div class="field-group full-width">
+    <label for="topic">Lesson Topic:</label>
+    <input type="text" id="topic" required />
+  </div>
+
+  <div class="field-group full-width">
+    <label for="objectives">Learning Objective/s:</label>
+    <textarea id="objectives" required></textarea>
+  </div>
+
+  <div class="flex-row">
+    <div class="field-group">
+      <label for="materials">Materials Needed:</label>
+      <textarea id="materials"></textarea>
+    </div>
+    <div class="field-group">
+      <label for="hook">Hook / Intro:</label>
+      <textarea id="hook"></textarea>
+    </div>
+  </div>
+
+  <div class="field-group full-width">
+    <label for="structure">Lesson Structure:</label>
+    <textarea id="structure"></textarea>
+  </div>
+
+  <div class="field-group full-width">
+    <label for="closure">Closure:</label>
+    <textarea id="closure"></textarea>
+  </div>
+
+  <div class="btns">
+    <button type="submit" class="save-btn">💾 Save Lesson</button>
+    <button type="button" class="print-btn" onclick="window.print()">🖨️ Print</button>
+  </div>
+</form>
+
+<footer>
+  <p>&copy; 2024 Thaakireen. All rights reserved.</p>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("lessonPlanForm");
+  const subjectSelect = document.getElementById("subject");
+  const dateInput = document.getElementById("date");
+
+  subjectSelect.addEventListener("change", loadLesson);
+  dateInput.addEventListener("change", loadLesson);
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+
+    const subject = subjectSelect.value;
+    const date = dateInput.value;
+    if (!subject || !date) {
+      alert("⚠️ Please select both subject and date.");
+      return;
+    }
+
+    const data = {
+      grade: document.getElementById("grade").value.trim(),
+      date,
+      subject,
+      topic: document.getElementById("topic").value.trim(),
+      objectives: document.getElementById("objectives").value.trim(),
+      materials: document.getElementById("materials").value.trim(),
+      hook: document.getElementById("hook").value.trim(),
+      structure: document.getElementById("structure").value.trim(),
+      closure: document.getElementById("closure").value.trim()
+    };
+
+    fetch("save_lesson_plan.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(res => {
+      console.log("Save Response:", res);
+      if (res.success) alert("✅ Lesson saved successfully!");
+      else alert("❌ Failed to save.");
+    })
+    .catch(err => {
+      console.error("Save error:", err);
+      alert("⚠️ Server error.");
+    });
+  });
+function loadLesson() {
+  const subject = subjectSelect.value;
+  const date = dateInput.value;
+  if (!subject || !date) return;
+
+  fetch(`get_lesson_plan.php?subject=${encodeURIComponent(subject)}&date=${date}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && data.lesson) {
+        const l = data.lesson;
+        document.getElementById("grade").value = l.grade ?? "";
+        document.getElementById("topic").value = l.topic ?? "";
+        document.getElementById("objectives").value = l.objectives ?? "";
+        document.getElementById("materials").value = l.materials ?? "";
+        document.getElementById("hook").value = l.hook ?? "";
+        document.getElementById("structure").value = l.structure ?? "";
+        document.getElementById("closure").value = l.closure ?? "";
+      } else {
+        // No plan yet — just clear the form silently
+        ["grade", "topic", "objectives", "materials", "hook", "structure", "closure"]
+          .forEach(id => document.getElementById(id).value = "");
+        // OPTIONAL: console.log("No lesson found. Starting fresh.");
+      }
+    })
+    .catch(err => {
+      // Only log actual network/server errors
+      console.warn("Failed to fetch lesson:", err);
+    });
+}
+
+});
+</script>
+
+</body>
+</html>

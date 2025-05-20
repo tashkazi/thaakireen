@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thaakireen - Attendance</title>
+  <style>
+    body {
+      margin: 0;
+      padding-bottom: 60px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f9f7;
+    }
+
+    td:first-child, th:first-child {
+  text-align: left;
+  padding-left: 15px;
+}
+
+
+    header, footer {
+      background-color: #387a5f;
+      color: #fff;
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    header {
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer {
+      bottom: 0;
+      text-align: center;
+    }
+
+    #logo img {
+      max-height: 50px;
+    }
+
+    #menu-container ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-right: 50px;
+      padding: 0;
+    }
+
+    #menu-container a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    main {
+      padding: 100px 20px 80px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    select, button, input[type="date"] {
+      padding: 6px;
+      margin-bottom: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: white;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #ccc;
+    }
+
+    .status-select {
+      width: 100%;
+    }
+
+    #teacherFilterSection {
+      display: none;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="logo">
+    <img src="uploads/Logo.png" alt="Thaakireen Logo">
+  </div>
+  <div id="menu-container">
+    <ul>
+      <li><a href="Homepage.html">Home</a></li>
+      <li><a href="Profile.html">My Profile</a></li>
+      <li><a href="Login.html">Logout</a></li>
+    </ul>
+  </div>
+</header>
+
+<main>
+  <h1>Weekly Attendance</h1>
+
+  <div id="teacherFilterSection">
+    <label for="teacherSelect">Filter by Teacher:</label>
+    <select id="teacherSelect"></select>
+  </div>
+
+  <label for="weekSelect">Select Week (Monday):</label>
+  <input type="date" id="weekSelect" />
+
+  <!-- Monthly Summary Button -->
+  <div style="margin: 15px 0;">
+    <a href="monthlyAttendance.html">
+      <button style="padding: 6px 12px; font-weight: bold;">
+        📅 View Monthly Summary
+      </button>
+    </a>
+  </div>
+
+  <table id="attendanceTable">
+    <thead>
+      <tr id="attendanceHeaderRow">
+        <!-- Dynamic Header -->
+      </tr>
+    </thead>
+    <tbody id="attendanceBody">
+      <!-- Dynamic Rows -->
+    </tbody>
+  </table>
+
+  <button id="saveAttendanceBtn" style="margin-top: 20px;">Save Attendance</button>
+</main>
+
+
+<footer>
+  <p>&copy; 2024 Thaakireen. All rights reserved.</p>
+</footer>
+
+<script>
+let isAdmin = false;
+let currentUserId = null;
+let students = [];
+
+window.addEventListener("DOMContentLoaded", async () => {
+  await checkUserRole();
+  await loadDropdownData();
+
+  // ⏱ Prefill week with current Monday
+  const weekInput = document.getElementById("weekSelect");
+  if (weekInput) {
+    const today = new Date();
+    const monday = new Date(today.setDate(today.getDate() - today.getDay() + 1));
+    weekInput.value = monday.toISOString().split('T')[0];
+  }
+
+  // 👨‍🏫 If teacher, auto-load students + attendance table
+  if (!isAdmin && currentUserId && weekInput?.value) {
+    await loadStudents(currentUserId);
+  }
+
+  // Week or teacher change = reload table
+  document.getElementById("weekSelect").addEventListener("change", () => {
+    const teacherId = isAdmin ? document.getElementById("teacherSelect").value : currentUserId;
+    if (teacherId && weekInput.value) {
+      loadStudents(teacherId);
+    }
+  });
+
+  if (isAdmin) {
+    document.getElementById("teacherSelect").addEventListener("change", () => {
+      const teacherId = document.getElementById("teacherSelect").value;
+      if (teacherId && weekInput.value) {
+        loadStudents(teacherId);
+      }
+    });
+  }
+
+  document.getElementById("saveAttendanceBtn").addEventListener("click", saveAttendance);
+});
+
+async function checkUserRole() {
+  const res = await fetch("check_user_role.php");
+  const data = await res.json();
+  isAdmin = data.isAdmin;
+  currentUserId = data.teacherId;
+
+  if (isAdmin) {
+    document.getElementById("teacherFilterSection").style.display = "block";
+    document.getElementById("teacherSelect").addEventListener("change", () => {
+      const teacherId = document.getElementById("teacherSelect").value;
+      if (teacherId && document.getElementById("weekSelect").value) {
+        loadStudents(teacherId);
+      }
+    });
+  }
+}
+
+async function loadDropdownData() {
+  const res = await fetch("fetch_dropdowns.php");
+  const data = await res.json();
+
+  if (isAdmin) {
+    const teacherSelect = document.getElementById("teacherSelect");
+    data.teachers.forEach(t => {
+      const option = document.createElement("option");
+      option.value = t.id;
+      option.textContent = t.name;
+      teacherSelect.appendChild(option);
+    });
+  }
+}
+
+const weekInput = document.getElementById("weekSelect");
+if (weekInput) {
+  const today = new Date();
+  const monday = new Date(today.setDate(today.getDate() - today.getDay() + 1));
+  weekInput.value = monday.toISOString().split('T')[0];
+}
+
+const teacherId = isAdmin ? document.getElementById("teacherSelect").value : currentUserId;
+if (teacherId) {
+  loadStudents(teacherId);
+}
+
+
+async function loadStudents(teacherId) {
+  const weekStart = document.getElementById("weekSelect").value;
+  if (!teacherId || !weekStart) return;
+
+  // Fetch student list
+  const res = await fetch(`get_students.php?teacher_id=${teacherId}&school_year=2024/2025`);
+  const data = await res.json();
+  students = data.students || [];
+
+  // Fetch attendance records for selected week
+  const attRes = await fetch(`getWeeklyAttendance.php?teacher_id=${teacherId}&week_start=${weekStart}`);
+  const attData = await attRes.json();
+  const attendanceMap = {};
+
+  if (attData.success) {
+    attData.data.forEach(entry => {
+      const key = `${entry.student_id}_${entry.date}`;
+      attendanceMap[key] = entry.status;
+    });
+  }
+
+  formatHeaderDates();
+  populateTable(attendanceMap);
+}
+
+
+function formatHeaderDates() {
+  const headerRow = document.getElementById("attendanceHeaderRow");
+  const weekInput = document.getElementById("weekSelect").value;
+  if (!weekInput) return;
+
+  const monday = new Date(weekInput);
+  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  const formattedHeaders = ["<th>Student Name</th>"];
+
+  for (let i = 0; i < 5; i++) {
+    const day = new Date(monday);
+    day.setDate(day.getDate() + i);
+    const label = `${days[i]}<br>(${(day.getMonth() + 1).toString().padStart(2, '0')}/${day.getDate().toString().padStart(2, '0')})`;
+    formattedHeaders.push(`<th>${label}</th>`);
+  }
+
+  headerRow.innerHTML = formattedHeaders.join('');
+}
+
+function populateTable(attendanceMap = {}) {
+  const tbody = document.getElementById("attendanceBody");
+  const weekStart = new Date(document.getElementById("weekSelect").value);
+  tbody.innerHTML = "";
+
+  students.forEach(student => {
+    const row = document.createElement("tr");
+    let cells = `<td>${student.name}</td>`;
+
+    for (let i = 0; i < 5; i++) {
+      const date = new Date(weekStart);
+      date.setDate(date.getDate() + i);
+      const dateStr = date.toISOString().split('T')[0];
+      const key = `${student.id}_${dateStr}`;
+      const savedValue = attendanceMap[key] || "";
+
+      cells += `
+        <td>
+          <select class="status-select" data-student-id="${student.id}" data-date="${dateStr}">
+            <option value="">-- Select --</option>
+            <option value="Present" ${savedValue === "Present" ? "selected" : ""}>✓ Present</option>
+            <option value="Absent" ${savedValue === "Absent" ? "selected" : ""}>✗ Absent</option>
+            <option value="Late" ${savedValue === "Late" ? "selected" : ""}>⏰ Late</option>
+            <option value="Excused" ${savedValue === "Excused" ? "selected" : ""}>📝 Excused</option>
+          </select>
+        </td>
+      `;
+    }
+
+    row.innerHTML = cells;
+    tbody.appendChild(row);
+  });
+}
+
+
+async function saveAttendance() {
+  const weekValue = document.getElementById("weekSelect").value;
+  if (!weekValue) return alert("Please select a week (Monday).");
+
+  const weekStart = new Date(weekValue);
+  const attendanceData = [];
+
+  document.querySelectorAll("#attendanceBody tr").forEach((row, rowIndex) => {
+    const student = students[rowIndex];
+    const selects = row.querySelectorAll(".status-select");
+    selects.forEach((select, dayOffset) => {
+      const selected = select.value;
+      const recordDate = new Date(weekStart);
+      recordDate.setDate(recordDate.getDate() + dayOffset);
+      attendanceData.push({
+        student_id: student.id,
+        teacher_id: isAdmin ? document.getElementById("teacherSelect").value : currentUserId,
+        date: recordDate.toISOString().slice(0, 10),
+        status: selected
+      });
+    });
+  });
+
+  const res = await fetch("save_attendance.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(attendanceData)
+  });
+
+  const result = await res.json();
+  alert(result.message || "Attendance saved!");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thaakireen - Board Reports</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+
+  <style>
+ body {
+      margin: 0;
+      padding-bottom: 60px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f9f7;
+    }
+    
+    header, footer {
+      background-color: #387a5f;
+      color: #fff;
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    header {
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer {
+      bottom: 0;
+      text-align: center;
+    }
+
+    #logo img {
+      max-height: 50px;
+    }
+
+    #menu-container ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-right: 50px;
+      padding: 0;
+    }
+
+    #menu-container a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    section {
+      margin-bottom: 30px;
+      padding: 15px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    .container {
+        margin-top: 10px;
+      max-width: 1100px;
+      margin: 100px auto 80px auto;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="logo">
+    <img src="uploads/Logo.png" alt="Thaakireen Logo" />
+  </div>
+  <div id="menu-container">
+    <ul>
+      <li><a href="Homepage.html">Home</a></li>
+      <li><a href="Profile.html">My Profile</a></li>
+      <li><a href="Login.html">Logout</a></li>
+    </ul>
+  </div>
+</header>
+
+<h1>Board Reports</h1>
+
+<div class="container">
+  <section>
+  <h2>📊 Enrollment Statistics</h2>
+  <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+    <div style="flex: 1 1 300px;">
+      <canvas id="chartBySchoolGrade"></canvas>
+    </div>
+    <div style="flex: 1 1 300px;">
+      <canvas id="chartByBookGrade"></canvas>
+    </div>
+    <div style="flex: 1 1 100%;">
+      <canvas id="chartByYear"></canvas>
+    </div>
+  </div>
+</section>
+
+
+  <section>
+    <h2>🧑‍🏫 Teacher and Staff Summary</h2>
+    <div id="teacherStats">Loading...</div>
+  </section>
+
+  <section>
+    <h2>📖 Quran Progress Overview</h2>
+    <div id="quranProgress">Loading...</div>
+  </section>
+
+  <section>
+    <h2>🙏 Dua Progress</h2>
+    <div id="duaProgress">Loading...</div>
+  </section>
+
+  <section>
+    <h2>📝 Written Exam Performance</h2>
+    <div id="writtenStats">Loading...</div>
+  </section>
+
+  <section>
+    <h2>📅 Exam Participation</h2>
+    <div id="examParticipation">Loading...</div>
+  </section>
+
+  <section>
+    <h2>🏆 Top Performers</h2>
+    <div id="topPerformers">Loading...</div>
+  </section>
+
+  <section>
+    <h2>🛠️ System Activity Logs</h2>
+    <div id="systemLogs">Loading...</div>
+  </section>
+</div>
+
+<footer>
+  <p>&copy; 2024 Thaakireen. All rights reserved.</p>
+</footer>
+
+<script>
+  async function loadEnrollmentStats() {
+  try {
+    const res = await fetch("get_enrollment_stats.php");
+    const data = await res.json();
+
+    // 📘 Chart: By School Grade
+    const schoolGrades = Object.keys(data.bySchoolGrade);
+    const schoolCounts = Object.values(data.bySchoolGrade);
+
+    new Chart(document.getElementById("chartBySchoolGrade"), {
+      type: 'bar',
+      data: {
+        labels: schoolGrades.map(g => `Grade ${g}`),
+        datasets: [{
+          label: 'Students by School Grade',
+          data: schoolCounts,
+          backgroundColor: '#4e8d7c'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Students by School Grade'
+          }
+        }
+      }
+    });
+
+    // 📙 Chart: By Book Grade
+    const bookGrades = Object.keys(data.byBookGrade);
+    const bookCounts = Object.values(data.byBookGrade);
+
+    new Chart(document.getElementById("chartByBookGrade"), {
+      type: 'bar',
+      data: {
+        labels: bookGrades.map(g => `Book ${g}`),
+        datasets: [{
+          label: 'Students by Book Grade',
+          data: bookCounts,
+          backgroundColor: '#719a5a'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Students by Book Grade'
+          }
+        }
+      }
+    });
+
+    // 📅 Chart: Enrollment Trend by Year
+    const years = Object.keys(data.byYear);
+    const yearCounts = Object.values(data.byYear);
+    const growth = yearCounts.map((val, i, arr) => {
+      if (i === 0) return 0;
+      const change = val - arr[i - 1];
+      return Math.round((change / arr[i - 1]) * 100);
+    });
+
+    new Chart(document.getElementById("chartByYear"), {
+      type: 'line',
+      data: {
+        labels: years,
+        datasets: [{
+          label: 'Total Students',
+          data: yearCounts,
+          borderColor: '#387a5f',
+          backgroundColor: '#9cd9c3',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Enrollment Trend by School Year'
+          },
+          tooltip: {
+            callbacks: {
+              afterLabel: function(context) {
+                const idx = context.dataIndex;
+                if (idx === 0) return '';
+                return `Growth: ${growth[idx]}%`;
+              }
+            }
+          }
+        }
+      }
+    });
+
+  } catch (err) {
+    console.error("Failed to load enrollment stats:", err);
+    document.getElementById("enrollmentStats").innerHTML = "<p style='color:red;'>Error loading data.</p>";
+  }
+}
+
+
+  async function loadTeacherStats() {
+    try {
+      const res = await fetch("get_teacher_stats.php");
+      const data = await res.json();
+
+      let html = `
+        <p><strong>Total Approved Teachers:</strong> ${data.totalTeachers}</p>
+        <p><strong>Total Volunteers:</strong> ${data.totalVolunteers}</p>
+        <p><strong>Total Active Staff:</strong> ${data.totalStaff}</p>
+        <p><strong>Teacher–Student Ratio:</strong> ${data.teacherStudentRatio}</p>
+        <h4>Students per Teacher:</h4>
+        <ul>
+          ${data.studentsPerTeacher.map(t => `<li>${t.name}: ${t.count}</li>`).join("")}
+        </ul>
+      `;
+
+      document.getElementById("teacherStats").innerHTML = html;
+    } catch (err) {
+      console.error("Failed to load teacher stats:", err);
+      document.getElementById("teacherStats").innerHTML = "<p style='color:red;'>Error loading data.</p>";
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    loadEnrollmentStats();
+    loadTeacherStats();
+    loadQuranProgress();
+    loadDuaProgress();
+
+
+  });
+
+async function loadQuranProgress() {
+  try {
+    const res = await fetch("get_quran_progress_kids.php");
+    const data = await res.json();
+    if (!data.success) throw new Error("Quran progress data fetch failed");
+
+    const teacherNames = Object.keys(data.completionByTeacher);
+    const container = document.getElementById("quranProgress");
+    container.innerHTML = "";
+
+    // 🟩 Chart 1: % Students Met Surah Goal (Bar)
+    const canvas1 = document.createElement("canvas");
+    new Chart(canvas1, {
+      type: 'bar',
+      data: {
+        labels: teacherNames,
+        datasets: [{
+          label: '% Goal Completed',
+          data: Object.values(data.completionByTeacher),
+          backgroundColor: '#4CAF50'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Surah Goal Completion by Teacher'
+          },
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.raw}%`
+            }
+          },
+          datalabels: {
+            display: true,
+            align: 'end',
+            anchor: 'end',
+            formatter: val => `${val}%`
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            title: { display: true, text: 'Completion (%)' }
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+    container.appendChild(canvas1);
+    container.appendChild(document.createElement("br"));
+
+    // 🟨 Chart 2: Memorization Accuracy (Stacked Bar)
+    const scoreLabels = ['80–100%', '60–79%', '<60%'];
+    const scoreKeys = ['above80', 'between60and79', 'below60'];
+    const canvas2 = document.createElement("canvas");
+
+    new Chart(canvas2, {
+      type: 'bar',
+      data: {
+        labels: teacherNames,
+        datasets: scoreKeys.map((key, i) => ({
+          label: scoreLabels[i],
+          data: teacherNames.map(name => data.scoreSummary[name]?.[key] || 0),
+          backgroundColor: ['#2e7d32', '#fbc02d', '#e53935'][i],
+          stack: 'accuracy'
+        }))
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Memorization Accuracy Distribution'
+          },
+          datalabels: {
+            display: true,
+            color: '#fff',
+            formatter: val => val > 0 ? val : '',
+            anchor: 'center'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Number of Students' }
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+    container.appendChild(canvas2);
+    container.appendChild(document.createElement("br"));
+
+    // 🟥 Chart 3: Goal Alignment (Stacked Bar)
+    const alignKeys = ['behind', 'on', 'above'];
+    const alignColors = ['#ef5350', '#ffa726', '#66bb6a'];
+    const canvas3 = document.createElement("canvas");
+
+    new Chart(canvas3, {
+      type: 'bar',
+      data: {
+        labels: teacherNames,
+        datasets: alignKeys.map((key, i) => ({
+          label: key.charAt(0).toUpperCase() + key.slice(1),
+          data: teacherNames.map(name => data.goalAlignment[name]?.[key] || 0),
+          backgroundColor: alignColors[i],
+          stack: 'alignment'
+        }))
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Goal Alignment by Teacher'
+          },
+          datalabels: {
+            display: true,
+            color: '#fff',
+            formatter: val => val > 0 ? val : '',
+            anchor: 'center'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Number of Students' }
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+    container.appendChild(canvas3);
+
+  } catch (err) {
+    console.error("Failed to load Quran progress:", err);
+    document.getElementById("quranProgress").innerHTML =
+      "<p style='color:red;'>Error loading Quran progress.</p>";
+  }
+}
+
+
+async function loadDuaProgress() {
+  try {
+    const res = await fetch("get_dua_progress_kids.php");
+    const data = await res.json();
+    if (!data.success) throw new Error("Failed to fetch dua progress");
+
+    const container = document.getElementById("duaProgress");
+    container.innerHTML = "";
+
+    const teachers = Object.keys(data.progressByTeacher);
+    const progress = data.progressByTeacher;
+
+    const completionPercent = teachers.map(t =>
+      Math.round((progress[t].completed / progress[t].total) * 100)
+    );
+
+    // 📈 Chart 1: Completion %
+    const canvas1 = document.createElement("canvas");
+    new Chart(canvas1, {
+      type: 'bar',
+      data: {
+        labels: teachers,
+        datasets: [{
+          label: "% Completed Dua Goals",
+          data: completionPercent,
+          backgroundColor: "#4caf50"
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: "Dua Goal Completion by Teacher"
+          },
+          datalabels: {
+            display: true,
+            anchor: "end",
+            align: "end",
+            formatter: val => `${val}%`
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            title: { display: true, text: "%" }
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+    container.appendChild(canvas1);
+    container.appendChild(document.createElement("br"));
+
+    // 📊 Chart 2: Score distribution
+    const canvas2 = document.createElement("canvas");
+    new Chart(canvas2, {
+      type: 'bar',
+      data: {
+        labels: teachers,
+        datasets: [
+          {
+            label: "85–100%",
+            data: teachers.map(t => progress[t].above85),
+            backgroundColor: "#388e3c",
+            stack: "score"
+          },
+          {
+            label: "60–84%",
+            data: teachers.map(t => progress[t].between60and84),
+            backgroundColor: "#fbc02d",
+            stack: "score"
+          },
+          {
+            label: "<60%",
+            data: teachers.map(t => progress[t].below60),
+            backgroundColor: "#e53935",
+            stack: "score"
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: "Dua Score Distribution"
+          },
+          datalabels: {
+            color: '#fff',
+            display: true,
+            formatter: val => val > 0 ? val : '',
+            anchor: 'center'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: "Students" }
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+    container.appendChild(canvas2);
+
+  } catch (err) {
+    console.error("Failed to load dua progress:", err);
+    document.getElementById("duaProgress").innerHTML =
+      "<p style='color:red;'>Error loading dua progress.</p>";
+  }
+}
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thaakireen - Class Reports</title>
+  <style>
+    body {
+      margin: 0;
+      padding-bottom: 60px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f9f7;
+    }
+
+    header, footer {
+      background-color: #387a5f;
+      color: #fff;
+      padding: 10px 20px;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    header {
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer {
+      bottom: 0;
+      text-align: center;
+    }
+
+    #logo img {
+      max-height: 50px;
+    }
+
+ #menu-container ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-right: 50px;
+            padding: 0;
+        }
+
+        #menu-container a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+        }
+
+
+    h1 {
+      text-align: center;
+      margin-top: 100px;
+    }
+
+    .dropdown-container {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 40px auto;
+      flex-wrap: wrap;
+    }
+
+    .dropdown-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 220px;
+    }
+
+    .dropdown-group label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #387a5f;
+    }
+
+    .dropdown-group select {
+      padding: 8px;
+      border: 2px solid #387a5f;
+      border-radius: 6px;
+      font-family: 'Times New Roman', Times, serif;
+      background-color: #f9fdfc;
+    }
+
+    #reportCard {
+      padding: 40px;
+      max-width: 800px;
+      margin: 40px auto;
+      border: 2px solid #387a5f;
+      background-color: #fef9e7;
+      font-family: 'Times New Roman', Times, serif;
+      position: relative;
+    }
+
+    .watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      opacity: 0.07;
+      pointer-events: none;
+    }
+
+    .report-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #d0e7de;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: center;
+    }
+
+    button {
+      background-color: #387a5f;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 10px 5px;
+    }
+
+    button:hover {
+      background-color: #2f6b54;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="logo"><img src="uploads/Logo.png" alt="Logo"></div>
+  <div id="menu-container">
+    <ul>
+      <li><a href="Homepage.html">Home</a></li>
+      <li><a href="Profile.html">My Profile</a></li>
+      <li><a href="Login.html">Logout</a></li>
+    </ul>
+  </div>
+</header>
+
+<h1>Report Cards</h1>
+
+<div class="dropdown-container">
+  <div class="dropdown-group" id="teacherDropdownGroup">
+    <label for="teacherSelect">Select Teacher:</label>
+    <select id="teacherSelect"></select>
+  </div>
+  <div class="dropdown-group">
+    <label for="studentSelect">Select Student:</label>
+    <select id="studentSelect" onchange="loadReportCard()">
+      <option value="">-- Choose Student --</option>
+    </select>
+  </div>
+</div>
+
+<div id="reportCard">
+  <div class="watermark"><img src="uploads/Logo.png" alt="Watermark" style="width: 700px;"></div>
+
+  <div class="report-content">
+    <div style="text-align:center;">
+      <img src="uploads/Logo.png" alt="Logo" style="max-width: 100px;"><br>
+      <h2>Thaakireen Islamic Institute</h2>
+      <h3>Student Report Card - <span id="schoolYear">2024/2025</span></h3>
+    </div>
+
+    <p><strong>Student Name:</strong> <span id="studentName"></span></p>
+    <p><strong>Assigned Teacher:</strong> <span id="teacherName"></span></p>
+
+    <table>
+  <thead>
+  <tr>
+    <th style="text-align: left;">Subject</th>
+    <th>Score</th>
+    <th>Max</th>
+    <th style="text-align: left;">Comments</th>
+  </tr>
+</thead>
+
+<tbody id="reportBody"></tbody>
+
+      <tbody id="reportBody"></tbody>
+    </table>
+
+    <div style="margin-top: 20px;">
+      <label><strong>Teacher Comments:</strong></label><br>
+      <textarea id="teacherComments" rows="4" style="width: 100%;"></textarea>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+      <p>Teacher's Signature: ______________________</p>
+      <p>Principal's Signature: ______________________</p>
+    </div>
+
+    <button onclick="exportToPDF()">Save Current Student</button>
+    <button onclick="exportWholeClass()">Save Whole Class</button>
+  </div>
+</div>
+
+<footer><p>&copy; 2024 Thaakireen. All rights reserved.</p></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+let isAdmin = false;
+let isTeacher = false;
+let teacherId = null;
+let studentMap = {};
+let allStudents = [];
+
+async function checkUserRole() {
+  const res = await fetch("check_user_role.php");
+  const data = await res.json();
+  isAdmin = data.isAdmin;
+  isTeacher = data.isTeacher;
+  teacherId = data.teacherId || null;
+}
+
+async function populateDropdowns() {
+  const res = await fetch("fetch_dropdowns.php");
+  const data = await res.json();
+  allStudents = data.students || [];
+  const teacherSelect = document.getElementById("teacherSelect");
+  const studentSelect = document.getElementById("studentSelect");
+
+  // Group students by teacher
+  studentMap = {};
+  allStudents.forEach(s => {
+    if (!studentMap[s.teacher_id]) studentMap[s.teacher_id] = [];
+    studentMap[s.teacher_id].push(s);
+  });
+
+  if (isAdmin) {
+    teacherSelect.innerHTML = `<option value="">-- Select Teacher --</option>`;
+    (data.teachers || []).forEach(t => {
+      teacherSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+    });
+
+    teacherSelect.addEventListener("change", () => {
+      const selectedTeacherId = teacherSelect.value;
+      populateStudentDropdown(selectedTeacherId);
+    });
+  } else if (isTeacher) {
+    document.getElementById("teacherDropdownGroup").style.display = "none";
+    populateStudentDropdown(teacherId);
+  }
+}
+
+function populateStudentDropdown(filterTeacherId) {
+  const studentSelect = document.getElementById("studentSelect");
+  studentSelect.innerHTML = `<option value="">-- Choose Student --</option>`;
+  const students = studentMap[parseInt(filterTeacherId)] || [];
+  students.forEach(s => {
+    studentSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+  });
+
+  if (students.length > 0) {
+    studentSelect.value = students[0].id;
+    loadReportCard();
+  }
+}
+
+function loadReportCard() {
+  const studentId = document.getElementById("studentSelect").value;
+  if (!studentId) return;
+
+  fetch(`fetch_student_report.php?student_id=${studentId}`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("studentName").textContent = data.studentName;
+      document.getElementById("teacherName").textContent = data.teacherName;
+
+      const reportBody = document.getElementById("reportBody");
+      reportBody.innerHTML = "";
+
+      getSubjectArray(data).forEach(subject => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+  <td style="text-align: left;">${subject.name}</td>
+  <td>${subject.score}</td>
+  <td>${subject.max}</td>
+  <td style="text-align: left;">${subject.comment}</td>`;
+
+
+        reportBody.appendChild(row);
+      });
+    })
+    .catch(err => {
+      console.error("Error loading report:", err);
+      alert("Failed to load report data.");
+    });
+}
+
+function getSubjectArray(data) {
+  function clean(val) {
+    return val !== null && val !== undefined && !isNaN(val) ? Math.round(val) : "N/A";
+  }
+
+  function comment(score, subject) {
+    if (score === "N/A") return "No data available for this subject.";
+    if (score >= 90) return `MashaAllah! Excellent achievement in ${subject}. Keep it up! 🌟`;
+    if (score >= 75) return `Alhamdulillah, good effort in ${subject}. Strive for even better! 👍`;
+    if (score >= 60) return `You’re doing okay in ${subject}. InshaAllah with more focus you’ll improve.`;
+    return `Needs more attention and consistency in ${subject}. May Allah guide and help you. 🤲`;
+  }
+
+  return [
+    {
+      name: "Quran Recitation",
+      score: clean(data.quran?.recitation_score),
+      max: 100,
+      comment: comment(clean(data.quran?.recitation_score), "Quran Recitation")
+    },
+    {
+      name: "Surah Memorization",
+      score: clean(data.quran?.memorization_score),
+      max: 100,
+      comment: comment(clean(data.quran?.memorization_score), "Surah Memorization")
+    },
+    {
+      name: "Dua Memorization",
+      score: clean(data.dua?.score),
+      max: 100,
+      comment: comment(clean(data.dua?.score), "Dua Memorization")
+    },
+    {
+      name: "Fiqh",
+      score: clean(data.fiqh?.score),
+      max: 100,
+      comment: comment(clean(data.fiqh?.score), "Fiqh")
+    },
+    {
+      name: "Aqaa’id",
+      score: clean(data.aqaaid?.score),
+      max: 100,
+      comment: comment(clean(data.aqaaid?.score), "Aqaa’id")
+    },
+    {
+      name: "Akhlaaq & Adab",
+      score: clean(data.akhlaaq?.score),
+      max: 100,
+      comment: comment(clean(data.akhlaaq?.score), "Akhlaaq & Adab")
+    },
+    {
+      name: "Ahadeeth",
+      score: clean(data.ahadeeth?.score),
+      max: 100,
+      comment: comment(clean(data.ahadeeth?.score), "Ahadeeth")
+    },
+    {
+      name: "Taareekh",
+      score: clean(data.taareekh?.score),
+      max: 100,
+      comment: comment(clean(data.taareekh?.score), "Taareekh")
+    }
+  ];
+
+  return [
+    { name: "Quran Recitation", score: clean(data.quran?.recitation_score), max: 100, comment: comment(clean(data.quran?.recitation_score), "Quran Recitation") },
+    { name: "Surah Memorization", score: clean(data.quran?.memorization_score), max: 100, comment: comment(clean(data.quran?.memorization_score), "Surah Memorization") },
+    { name: "Dua Memorization", score: clean(data.dua?.score), max: 100, comment: comment(clean(data.dua?.score), "Dua Memorization") },
+    { name: "Fiqh", score: clean(data.fiqh?.score), max: 100, comment: comment(clean(data.fiqh?.score), "Fiqh") },
+    { name: "Aqaa’id", score: clean(data.aqaaid?.score), max: 100, comment: comment(clean(data.aqaaid?.score), "Aqaa’id") },
+    { name: "Akhlaaq & Adab", score: clean(data.akhlaaq?.score), max: 100, comment: comment(clean(data.akhlaaq?.score), "Akhlaaq & Adab") },
+    { name: "Ahadeeth", score: clean(data.ahadeeth?.score), max: 100, comment: comment(clean(data.ahadeeth?.score), "Ahadeeth") },
+    { name: "Taareekh", score: clean(data.taareekh?.score), max: 100, comment: comment(clean(data.taareekh?.score), "Taareekh") }
+  ];
+}
+
+async function exportToPDF() {
+  const reportCard = document.getElementById("reportCard");
+  const clone = reportCard.cloneNode(true);
+  clone.querySelectorAll("button").forEach(btn => btn.remove());
+
+  const wrapper = document.createElement("div");
+  wrapper.style.position = "fixed";
+  wrapper.style.left = "-9999px";
+  wrapper.appendChild(clone);
+  document.body.appendChild(wrapper);
+
+  const canvas = await html2canvas(clone, { scale: 4, backgroundColor: "#fff" });
+  const imgData = canvas.toDataURL("image/png");
+  const pdf = new jspdf.jsPDF("p", "pt", "a4");
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const imgWidth = pageWidth - 40;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+  pdf.addImage(imgData, "PNG", 20, 20, imgWidth, imgHeight, '', 'FAST');
+  const name = document.getElementById("studentName").textContent.trim().replace(/\s+/g, "_") || "Report";
+  pdf.save(`${name}_Report_Card.pdf`);
+
+  document.body.removeChild(wrapper);
+}
+
+async function exportWholeClass() {
+  const teacherId = isAdmin ? document.getElementById("teacherSelect").value : teacherId;
+  if (!teacherId) return alert("Please select a teacher.");
+
+  const res = await fetch("fetch_dropdowns.php");
+  const data = await res.json();
+  const students = isAdmin ? data.students : data.students.filter(s => s.teacher_id == teacherId);
+
+  for (const student of students) {
+    document.getElementById("studentSelect").value = student.id;
+    await loadReportCard();
+    await new Promise(r => setTimeout(r, 1000));
+    await exportToPDF();
+  }
+
+  alert("✅ All student PDFs saved.");
+}
+
+window.addEventListener("DOMContentLoaded", async () => {
+  await checkUserRole();
+  await populateDropdowns();
+});
+</script>
+
+</body>
+</html>
