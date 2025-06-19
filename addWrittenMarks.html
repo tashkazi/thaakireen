@@ -4,150 +4,258 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thaakireen - Mark Sheet</title>
-  <style>
-    body {
-      margin: 0;
-      padding-bottom: 60px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f9f7;
-    }
+<style>
+:root {
+  --primary: #387a5f;
+  --dark: #2e5e4e;
+  --light-bg: #f4f9f7;
+}
 
-    header, footer {
-      background-color: #387a5f;
-      color: #fff;
-      padding: 10px 20px;
-      position: fixed;
-      width: 100%;
-      z-index: 1000;
-    }
+body {
+  margin: 0;
+  padding-bottom: 60px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--light-bg);
+}
 
-    header {
-      top: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+/* Header and Footer */
+header, footer {
+  background-color: var(--primary);
+  color: #fff;
+  padding: 10px 20px;
+  width: 100%;
+  position: fixed;
+  z-index: 1000;
+}
 
-    footer {
-      bottom: 0;
-      text-align: center;
-    }
+header {
+  top: 0;
+}
 
-    #logo img {
-      max-height: 50px;
-    }
+footer {
+  bottom: 0;
+  text-align: center;
+}
 
-    #menu-container ul {
-      list-style: none;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-right: 50px;
-      padding: 0;
-    }
+/* Header Layout */
+#header-inner {
+  display: flex;
+  margin-right: 30px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
 
-    #menu-container a {
-      text-decoration: none;
-      color: #fff;
-      font-weight: bold;
-    }
+#logo img {
+  max-height: 50px;
+}
 
-    h1 {
-      text-align: center;
-      margin: 20px 0;
-    }
+#main-nav {
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
+}
 
-    .container {
-      max-width: 1000px;
-      margin: 100px auto 50px auto;
-      padding: 20px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
+#main-menu {
+  list-style: none;
+  display: flex;
+  margin: 0;
+}
 
-    .dropdown-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 30px;
-      margin: 40px auto;
-      max-width: 800px;
-      text-align: left;
-    }
+#main-menu li a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  margin-right: 30px;
+  transition: 0.3s;
+}
 
-    .dropdown-group {
-      display: flex;
-      flex-direction: column;
-      min-width: 220px;
-    }
+#main-menu li a:hover {
+  text-decoration: underline;
+}
 
-    .dropdown-group label {
-      font-weight: bold;
-      margin-bottom: 5px;
-      color: #387a5f;
-      font-size: 16px;
-    }
+/* Burger Button */
+#menu-toggle {
+  display: none;
+  font-size: 28px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
 
-    .dropdown-group select {
-      padding: 8px 12px;
-      font-size: 16px;
-      border: 2px solid #387a5f;
-      border-radius: 6px;
-      font-family: 'Times New Roman', Times, serif;
-      background-color: #f9fdfc;
-      color: #333;
-    }
+/* Main Container */
+.container {
+  max-width: 1000px;
+  margin: 100px auto 60px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
 
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
+h1 {
+  text-align: center;
+  margin-top: 10px; /* accounts for fixed header height */
+  margin-bottom: 20px;
+  font-size: 28px;
+}
 
-    table th, table td {
-      padding: 8px;
-      text-align: left;
-      border: 1px solid #ccc;
-    }
 
-    table thead {
-      background-color: #d0e7de;
-    }
+/* Dropdowns */
+.dropdown-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  margin: 40px auto;
+  max-width: 800px;
+}
 
-    button[type="submit"] {
-      background-color: #387a5f;
-      color: white;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+.dropdown-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+}
 
-    button[type="submit"]:hover {
-      background-color: #2f6b54;
-    }
+.dropdown-group label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: var(--primary);
+  font-size: 16px;
+}
 
-    .form-actions {
-      margin-top: 20px;
-      text-align: center;
-    }
-  </style>
+.dropdown-group select {
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 2px solid var(--primary);
+  border-radius: 6px;
+  background-color: #f9fdfc;
+  color: #333;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table th, table td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ccc;
+}
+
+table thead {
+  background-color: #d0e7de;
+}
+
+/* Form Buttons */
+button[type="submit"] {
+  background-color: var(--primary);
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #2f6b54;
+}
+
+.form-actions {
+  margin-top: 20px;
+  text-align: center;
+}
+
+
+#main-menu {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+#main-menu li a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 8px 12px;
+}
+
+#main-menu li a:hover {
+  text-decoration: underline;
+}
+
+/* MOBILE STYLES */
+@media (max-width: 768px) {
+  #menu-toggle {
+    display: block;
+    margin-right: 30px;
+  }
+
+  #main-menu {
+    display: none;
+    flex-direction: column;
+    background-color: #387a5f;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 10px 0;
+  }
+
+  #main-menu.show {
+    display: flex;
+  }
+
+  #main-menu li {
+    text-align: center;
+    padding: 12px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  #header-inner {
+    flex-wrap: nowrap;
+  }
+
+
+  .container {
+    margin: 100px 10px 60px;
+    padding: 20px 15px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.05);
+  }
+}
+</style>
+
 </head>
 <body>
+
 <header>
-  <div id="logo">
-    <img src="uploads/Logo.png" alt="Thaakireen Logo">
-  </div>
-  <div id="menu-container">
-    <ul>
-      <li><a href="Homepage.html">Home</a></li>
-      <li><a href="Profile.html">My Profile</a></li>
-      <li><a href="Login.html">Logout</a></li>
-    </ul>
+  <div id="header-inner">
+    <div id="logo">
+      <img src="uploads/Logo.png" alt="Thaakireen Logo" />
+    </div>
+
+    <nav id="main-nav">
+      <ul id="main-menu">
+        <li><a href="Homepage.html">Home</a></li>
+        <li><a href="Profile.html">My Profile</a></li>
+        <li><a href="Login.html">Logout</a></li>
+      </ul>
+    </nav>
+
+    <button id="menu-toggle">&#9776;</button>
   </div>
 </header>
+
+
 
 <div class="container">
   <h1>Mark Sheet</h1>
@@ -269,15 +377,16 @@ function populateStudentDropdown(filterTeacherId) {
   const students = studentMap[teacherKey] || [];
 
   students.forEach(s => {
-    studentSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+studentSelect.innerHTML += `<option value="${s.id}">${s.firstName} ${s.lastName}</option>`;
+
   });
 }
 
 
-// 🟩 Initialization
 window.addEventListener("DOMContentLoaded", async () => {
   await checkUserRole();
   await populateDropdowns();
+  setupFormSubmit(); // ✅ only once
 });
 
 
@@ -384,14 +493,14 @@ function setupFormSubmit() {
         });
     });
 }
-window.addEventListener("DOMContentLoaded", async () => {
-  await checkUserRole();
-  await populateDropdowns();
-  setupFormSubmit(); // ✅ This was missing
-});
 
 </script>
 
+<script>
+  document.getElementById("menu-toggle").addEventListener("click", function () {
+    document.getElementById("main-menu").classList.toggle("show");
+  });
+</script>
 
 </body>
 </html>

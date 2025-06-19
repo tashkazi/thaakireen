@@ -177,6 +177,97 @@
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-15px); }
     }
+
+    @media (max-width: 768px) {
+ header {
+  background-color: #6db3a0;
+  color: #fffbe6;
+  padding: 20px 40px;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  align-items: right;
+  justify-content: center; /* Centers the title */
+  position: relative;
+}
+
+.back-button {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #457e73;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 5px;
+  font-size: 10px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+
+  .container {
+    padding: 20px 10px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 8px;
+  }
+
+  select {
+    font-size: 13px;
+    padding: 5px 10px;
+  }
+
+  button.save {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+
+  .bubble, .icon-deco {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  footer {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  #summaryBox {
+    font-size: 14px;
+  }
+
+  #teacherFilterSection label {
+    font-size: 14px;
+  }
+
+  #weekSelect {
+    font-size: 13px;
+  }
+
+  .table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+table {
+  width: 100%;
+  min-width: 600px; /* Ensures table scrolls if too wide */
+}
+
+}
+
   </style>
 </head>
 <body>
@@ -207,12 +298,15 @@
 
     <h2>Week of <input type="date" id="weekSelect" /></h2>
 
-    <table>
-      <thead>
-        <tr id="attendanceHeaderRow"></tr>
-      </thead>
-      <tbody id="attendanceBody"></tbody>
-    </table>
+  <div class="table-wrapper">
+  <table>
+    <thead>
+      <tr id="attendanceHeaderRow"></tr>
+    </thead>
+    <tbody id="attendanceBody"></tbody>
+  </table>
+</div>
+
 
     <button class="save" id="saveAttendanceBtn">📂 Save Attendance</button>
     <div id="denied" class="access-denied" style="display: none;">

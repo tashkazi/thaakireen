@@ -85,9 +85,93 @@
       margin: 100px auto 80px auto;
       padding: 20px;
     }
+
+    #mobileWarning {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #f4f9f7 0%, #d0e7de 100%);
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+#mobileWarning .mobile-message {
+  background-color: white;
+  border: 2px solid #387a5f;
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+  animation: fadeInScale 0.4s ease;
+}
+
+.warning-logo {
+  max-width: 90px;
+  margin-bottom: 15px;
+}
+
+.mobile-message h2 {
+  color: #2e5e4e;
+  margin-bottom: 10px;
+}
+
+.mobile-message p {
+  font-size: 16px;
+  color: #444;
+  line-height: 1.6;
+  margin: 10px 0 20px;
+}
+
+.mobile-message .back-btn {
+  padding: 10px 24px;
+  background-color: #387a5f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.mobile-message .back-btn:hover {
+  background-color: #2f654e;
+}
+
+/* ✅ Show only on mobile */
+@media only screen and (max-width: 767px) {
+  #mobileWarning {
+    display: flex;
+  }
+
+  body > *:not(#mobileWarning) {
+    display: none !important;
+  }
+}
+
   </style>
 </head>
 <body>
+ <div id="mobileWarning">
+  <div class="mobile-message">
+    <img src="uploads/Logo.png" alt="Thaakireen Logo" class="warning-logo">
+    <h2>Mobile Access Limited</h2>
+    <p>
+      📵 This page is best viewed on a <strong>desktop or tablet</strong>.<br>
+      Please continue there to view Board Reports.
+    </p>
+    <button onclick="window.location.href='Homepage.html'" class="back-btn">🔙 Back to Home</button>
+  </div>
+</div>
 
 <header>
   <div id="logo">
@@ -102,9 +186,10 @@
   </div>
 </header>
 
-<h1>Board Reports</h1>
+
 
 <div class="container">
+  <h1>Board Reports</h1>
   <section>
   <h2>📊 Enrollment Statistics</h2>
   <div style="display: flex; flex-wrap: wrap; gap: 20px;">
@@ -120,6 +205,10 @@
   </div>
 </section>
 
+<h2>📉 Student Retention and Attrition</h2>
+<canvas id="chartRetention"></canvas>
+
+
 
   <section>
     <h2>🧑‍🏫 Teacher and Staff Summary</h2>
@@ -131,10 +220,19 @@
     <div id="quranProgress">Loading...</div>
   </section>
 
+
+
   <section>
-    <h2>🙏 Dua Progress</h2>
-    <div id="duaProgress">Loading...</div>
+  <h2>🎯 Dua Goal Completion by Grade</h2>
+  <canvas id="chartDuaGoalCompletion"></canvas>
   </section>
+<section>
+  <h2>🎓 Dua Goal Completion by Teacher</h2>
+  <canvas id="chartDuaGoalByTeacher"></canvas>
+</section>
+
+
+
 
   <section>
     <h2>📝 Written Exam Performance</h2>
@@ -162,6 +260,18 @@
 </footer>
 
 <script>
+
+
+window.addEventListener("DOMContentLoaded", () => {
+  loadEnrollmentStats();
+  loadTeacherStats();
+  loadQuranProgress();
+  loadDuaGoalCompletion();
+  loadDuaGoalCompletionByTeacher();
+});
+
+
+
   async function loadEnrollmentStats() {
   try {
     const res = await fetch("get_enrollment_stats.php");
@@ -289,14 +399,6 @@
     }
   }
 
-  window.addEventListener("DOMContentLoaded", () => {
-    loadEnrollmentStats();
-    loadTeacherStats();
-    loadQuranProgress();
-    loadDuaProgress();
-
-
-  });
 
 async function loadQuranProgress() {
   try {
@@ -443,85 +545,30 @@ async function loadQuranProgress() {
 }
 
 
-async function loadDuaProgress() {
+async function loadDuaGoalCompletion() {
   try {
-    const res = await fetch("get_dua_progress_kids.php");
+    const res = await fetch("get_dua_goal_completion_by_grade.php");
     const data = await res.json();
-    if (!data.success) throw new Error("Failed to fetch dua progress");
+    if (!data.success) throw new Error("Fetch failed");
 
-    const container = document.getElementById("duaProgress");
-    container.innerHTML = "";
+    const grades = Object.keys(data.goalCompletionByGrade);
+    const total = grades.map(g => data.goalCompletionByGrade[g].total);
+    const completed = grades.map(g => data.goalCompletionByGrade[g].completed);
 
-    const teachers = Object.keys(data.progressByTeacher);
-    const progress = data.progressByTeacher;
-
-    const completionPercent = teachers.map(t =>
-      Math.round((progress[t].completed / progress[t].total) * 100)
-    );
-
-    // 📈 Chart 1: Completion %
-    const canvas1 = document.createElement("canvas");
-    new Chart(canvas1, {
+    new Chart(document.getElementById("chartDuaGoalCompletion"), {
       type: 'bar',
       data: {
-        labels: teachers,
-        datasets: [{
-          label: "% Completed Dua Goals",
-          data: completionPercent,
-          backgroundColor: "#4caf50"
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: "Dua Goal Completion by Teacher"
-          },
-          datalabels: {
-            display: true,
-            anchor: "end",
-            align: "end",
-            formatter: val => `${val}%`
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 100,
-            title: { display: true, text: "%" }
-          }
-        }
-      },
-      plugins: [ChartDataLabels]
-    });
-    container.appendChild(canvas1);
-    container.appendChild(document.createElement("br"));
-
-    // 📊 Chart 2: Score distribution
-    const canvas2 = document.createElement("canvas");
-    new Chart(canvas2, {
-      type: 'bar',
-      data: {
-        labels: teachers,
+        labels: grades,
         datasets: [
           {
-            label: "85–100%",
-            data: teachers.map(t => progress[t].above85),
-            backgroundColor: "#388e3c",
-            stack: "score"
+            label: "Completed Goal",
+            data: completed,
+            backgroundColor: "#66bb6a"
           },
           {
-            label: "60–84%",
-            data: teachers.map(t => progress[t].between60and84),
-            backgroundColor: "#fbc02d",
-            stack: "score"
-          },
-          {
-            label: "<60%",
-            data: teachers.map(t => progress[t].below60),
-            backgroundColor: "#e53935",
-            stack: "score"
+            label: "Total Students",
+            data: total,
+            backgroundColor: "#ccc"
           }
         ]
       },
@@ -530,13 +577,7 @@ async function loadDuaProgress() {
         plugins: {
           title: {
             display: true,
-            text: "Dua Score Distribution"
-          },
-          datalabels: {
-            color: '#fff',
-            display: true,
-            formatter: val => val > 0 ? val : '',
-            anchor: 'center'
+            text: "Dua Goal Completion by Grade"
           }
         },
         scales: {
@@ -545,18 +586,67 @@ async function loadDuaProgress() {
             title: { display: true, text: "Students" }
           }
         }
-      },
-      plugins: [ChartDataLabels]
+      }
     });
-    container.appendChild(canvas2);
-
   } catch (err) {
-    console.error("Failed to load dua progress:", err);
-    document.getElementById("duaProgress").innerHTML =
-      "<p style='color:red;'>Error loading dua progress.</p>";
+    console.error("Failed to load dua goal completion stats:", err);
+    const container = document.getElementById("chartDuaGoalCompletion").parentElement;
+    container.innerHTML = "<p style='color:red;'>Error loading dua goal data.</p>";
   }
 }
 
+async function loadDuaGoalCompletionByTeacher() {
+  try {
+    const res = await fetch("get_dua_goal_completion_by_teacher.php");
+    const data = await res.json();
+    if (!data.success) throw new Error("Data fetch failed");
+
+    const teachers = Object.keys(data.goalCompletionByTeacher);
+    const completed = teachers.map(t => data.goalCompletionByTeacher[t].completed);
+    const total = teachers.map(t => data.goalCompletionByTeacher[t].total);
+
+    new Chart(document.getElementById("chartDuaGoalByTeacher"), {
+      type: 'bar',
+      data: {
+        labels: teachers,
+        datasets: [
+          {
+            label: "Completed Goal",
+            data: completed,
+            backgroundColor: "#4caf50"
+          },
+          {
+            label: "Total Students",
+            data: total,
+            backgroundColor: "#c8e6c9"
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: "Dua Goal Completion by Teacher"
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: "Students"
+            }
+          }
+        }
+      }
+    });
+  } catch (err) {
+    console.error("Failed to load teacher dua goal data:", err);
+    document.getElementById("chartDuaGoalByTeacher").parentElement.innerHTML =
+      "<p style='color:red;'>Error loading teacher data.</p>";
+  }
+}
 
 </script>
 

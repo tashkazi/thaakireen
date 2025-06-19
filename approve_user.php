@@ -16,9 +16,11 @@ if (!$userId) {
     exit;
 }
 
+// ✅ Include all roles including isParent
 $roles = [
     'isAdmin', 'isTeacher', 'isExaminer', 'isPrincipal',
-    'isCoordinator', 'isSupervisor', 'isVolunteer', 'isSummerCampTeacher'
+    'isCoordinator', 'isSupervisor', 'isVolunteer',
+    'isSummerCampTeacher', 'isParent'
 ];
 
 $setParts = [];
@@ -42,17 +44,21 @@ $user = $userStmt->fetch();
 
 $fullName = $user['firstName'] . ' ' . $user['lastName'];
 $email = $user['email'];
+$isParent = !empty($data['isParent']);
 
-// ✅ Insert into employee_directory if not exists
-$checkEmp = $pdo->prepare("SELECT id FROM employee_directory WHERE email = ?");
-$checkEmp->execute([$email]);
+// ✅ Insert into employee_directory only if NOT a parent
+if (!$isParent) {
+    $checkEmp = $pdo->prepare("SELECT id FROM employee_directory WHERE email = ?");
+    $checkEmp->execute([$email]);
 
-if ($checkEmp->rowCount() === 0) {
-    $type = !empty($data['isVolunteer']) ? 'Volunteer' :
-            (!empty($data['isSummerCampTeacher']) ? 'Summer Camp Teacher' : 'Teacher');
+    if ($checkEmp->rowCount() === 0) {
+        $type = !empty($data['isVolunteer']) ? 'Volunteer' :
+                (!empty($data['isSummerCampTeacher']) ? 'Summer Camp Teacher' :
+                (!empty($data['isTeacher']) ? 'Teacher' : 'Staff'));
 
-    $insertEmp = $pdo->prepare("INSERT INTO employee_directory (full_name, position, type, email) VALUES (?, ?, ?, ?)");
-    $insertEmp->execute([$fullName, $type, $type, $email]);
+        $insertEmp = $pdo->prepare("INSERT INTO employee_directory (full_name, position, type, email) VALUES (?, ?, ?, ?)");
+        $insertEmp->execute([$fullName, $type, $type, $email]);
+    }
 }
 
 // ✅ Log approval action
@@ -66,9 +72,15 @@ $grantedStr = empty($granted) ? "No roles assigned" : "Roles: " . implode(', ', 
 
 $performedBy = $_SESSION['userName'] ?? 'Unknown User';
 $role = $_SESSION['role'] ?? 'Unknown Role';
-$action = "Approved account and updated roles for $fullName ($userId). $grantedStr";
+$action = "Approved account and updated roles for $fullName (User ID: $userId). $grantedStr";
 
 $logStmt = $pdo->prepare("INSERT INTO audit_logs (user_name, role, action) VALUES (?, ?, ?)");
 $logStmt->execute([$performedBy, $role, $action]);
+
+// ✅ Auto-link parent to any matching registration_requests
+if ($isParent) {
+    $linkStmt = $pdo->prepare("UPDATE registration_requests SET parent_user_id = ? WHERE parent1_email = ?");
+    $linkStmt->execute([$userId, $email]);
+}
 
 echo json_encode(["success" => true]);

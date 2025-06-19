@@ -8,10 +8,11 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $userId = $_SESSION['user_id'];
+
 $data = json_decode(file_get_contents("php://input"), true);
 
-if (!$data || !isset($data['week_start']) || !is_array($data['entries'])) {
-  echo json_encode(["success" => false, "message" => "Invalid request data"]);
+if (!isset($data['entries']) || !is_array($data['entries'])) {
+  echo json_encode(["success" => false, "message" => "Invalid payload"]);
   exit;
 }
 
@@ -21,35 +22,30 @@ if ($conn->connect_error) {
   exit;
 }
 
-// Clean existing records for this user/week
-$stmt = $conn->prepare("DELETE FROM teacher_timesheets WHERE user_id = ? AND week_start = ?");
-$stmt->bind_param("is", $userId, $data['week_start']);
-$stmt->execute();
-$stmt->close();
-
-// Insert updated entries
-$stmt = $conn->prepare("
-  INSERT INTO teacher_timesheets 
-    (user_id, date, day, start_time, end_time, hours_worked, week_start, is_absent) 
+$insertStmt = $conn->prepare("
+  INSERT INTO teacher_timesheets (user_id, date, day, start_time, end_time, hours_worked, is_absent, week_start)
   VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  ON DUPLICATE KEY UPDATE
+    start_time = VALUES(start_time),
+    end_time = VALUES(end_time),
+    hours_worked = VALUES(hours_worked),
+    is_absent = VALUES(is_absent),
+    day = VALUES(day),
+    week_start = VALUES(week_start)
 ");
 
 foreach ($data['entries'] as $entry) {
-  $date       = $entry['date'] ?? null;
-  $day        = $entry['day'] ?? null;
-  $start      = $entry['start_time'] ?? null;
-  $end        = $entry['end_time'] ?? null;
-  $hours      = is_numeric($entry['hours_worked']) ? $entry['hours_worked'] : 0;
-  $weekStart  = $data['week_start'];
-  $isAbsent   = !empty($entry['is_absent']) ? 1 : 0;
+  $date        = $entry['date'] ?? '';
+  $day         = $entry['day'] ?? '';
+  $start       = $entry['start'] ?: null;
+  $end         = $entry['end'] ?: null;
+  $hours       = is_numeric($entry['hours']) ? $entry['hours'] : 0;
+  $absent      = intval($entry['absent'] ?? 0);
+  $weekStart   = $entry['weekStart'] ?? $date;
 
-  if ($date && $day) {
-    $stmt->bind_param("issssdsi", $userId, $date, $day, $start, $end, $hours, $weekStart, $isAbsent);
-    $stmt->execute();
-  }
+  $insertStmt->bind_param("issssdss", $userId, $date, $day, $start, $end, $hours, $absent, $weekStart);
+  $insertStmt->execute();
 }
 
-$stmt->close();
-$conn->close();
-
-echo json_encode(["success" => true]);
+echo json_encode(["success" => true, "message" => "Timesheet saved successfully"]);
+exit;

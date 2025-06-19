@@ -5,61 +5,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Thaakireen - Student Profiles</title>
   <style>
-   body {
-      margin: 0;
-      padding-bottom: 60px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f9f7;
-    }
+  :root {
+  --primary: #387a5f;
+  --dark: #2e5e4e;
+  --light-bg: #f4f9f7;
+}
 
+body {
+  margin: 0;
+  padding-bottom: 60px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--light-bg);
+}
 
-        header, footer {
-            background-color: #387a5f;
-            color: #fff;
-            padding: 10px 20px;
-            position: fixed;
-            width: 100%;
-            z-index: 1000;
-        }
+/* Header and Footer */
+header, footer {
+  background-color: var(--primary);
+  color: #fff;
+  padding: 10px 20px;
+  width: 100%;
+  position: fixed;
+  z-index: 1000;
+}
 
-        header {
-            top: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+header {
+  top: 0;
+}
 
-        footer {
-            bottom: 0;
-            text-align: center;
-        }
+footer {
+  bottom: 0;
+  text-align: center;
+}
 
-        #logo img {
-            max-height: 50px;
-        }
+/* Header Layout */
+#header-inner {
+  display: flex;
+  margin-right: 30px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
 
-        #menu-container ul {
-            list-style: none;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-right: 50px;
-            padding: 0;
-            height: 100%;
-        }
-        
+#logo img {
+  max-height: 50px;
+}
 
-        #menu-container a {
-            text-decoration: none;
-            color: #fff;
-            font-weight: bold;
-        }
+#main-nav {
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
+}
 
-    .container {
-      max-width: 1100px;
-      margin: 120px auto 40px;
-      padding: 20px;
-    }
+#main-menu {
+  list-style: none;
+  display: flex;
+  margin: 0;
+}
+
+#main-menu li a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  margin-right: 30px;
+  transition: 0.3s;
+}
+
+#main-menu li a:hover {
+  text-decoration: underline;
+}
+
+/* Burger Button */
+#menu-toggle {
+  display: none;
+  font-size: 28px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* Main Container */
+.container {
+  max-width: 1000px;
+  margin: 100px auto 60px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
 
     h1 {
       text-align: center;
@@ -90,6 +124,22 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
       margin-bottom: 20px;
     }
+
+.status-badge.active {
+  background: #d0f0d0;
+  color: #2a7a2a;
+}
+
+.status-badge.left {
+  background: #fce1e1;
+  color: #a33;
+}
+
+.status-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
 
     .student-card h3 {
       margin: 0;
@@ -265,22 +315,91 @@
 }
 
 
+         /* MOBILE STYLES */
+  @media (max-width: 768px) {
+    #main-menu {
+      display: none;
+      flex-direction: column;
+      background-color: var(--primary);
+      position: absolute;
+      top: 60px;
+      right: 0;
+      width: 100%;
+      padding: 10px 0;
+    }
 
+    #main-menu.show {
+      display: flex;
+    }
+
+    #main-menu li {
+      text-align: center;
+      padding: 10px 0;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    #menu-toggle {
+      display: block;
+      margin-left: 230px;
+    }
+
+    #header-inner {
+      flex-wrap: nowrap;
+    }
+
+    .controls {
+      flex-direction: column;
+    }
+
+    table, th, td {
+      font-size: 14px;
+    }
+
+    main.container {
+      margin: 100px 10px 80px;
+      padding: 15px;
+    }
+
+     .container {
+    margin: 100px 10px 60px;
+    padding: 20px 15px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.05);
+  }
+
+  
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  th, td {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 1.4em;
+  }
+
+  }
   </style>
 </head>
 <body>
 
 
 <header>
-  <div id="logo">
-    <img src="uploads/Logo.png" alt="Thaakireen Logo">
-  </div>
-  <div id="menu-container">
-    <ul>
-      <li><a href="Homepage.html">Home</a></li>
-      <li><a href="Profile.html">My Profile</a></li>
-      <li><a href="Login.html">Logout</a></li>
-    </ul>
+  <div id="header-inner">
+    <div id="logo"><img src="uploads/Logo.png" alt="Thaakireen Logo"></div>
+    <button id="menu-toggle">&#9776;</button>
+    <nav>
+      <ul id="main-menu">
+        <li><a href="Homepage.html">Home</a></li>
+        <li><a href="Profile.html">My Profile</a></li>
+        <li><a href="Login.html">Logout</a></li>
+      </ul>
+    </nav>
   </div>
 </header>
 
@@ -386,101 +505,228 @@ window.onload = () => {
 
 function loadApprovedStudents() {
   fetch("fetch_students.php")
-    .then(res => res.json())
-    .then(data => {
-      allStudents = data;
-      renderStudents(data, "studentList");
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+      return res.json();
     })
-    .catch(err => console.error("Failed to load approved students:", err));
+    .then(data => {
+      if (Array.isArray(data)) {
+        allStudents = data;
+        renderStudents(data, "studentList");
+      } else {
+        console.error("Unexpected data format:", data);
+        alert("Unexpected response format from server.");
+      }
+    })
+    .catch(err => {
+      console.error("Failed to load approved students:", err);
+      alert("Error loading approved students. Please try again later.");
+    });
 }
+
 
 function loadPendingAndWaitlisted() {
   fetch("get_pending_waitlisted.php?status=Pending")
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error(`Pending fetch failed. Status: ${res.status}`);
+      return res.json();
+    })
     .then(data => {
-      if (data.success) renderStudents(data.students, "pendingContainer");
+      if (data.success && Array.isArray(data.students)) {
+        renderStudents(data.students, "pendingContainer");
+      } else {
+        console.warn("Unexpected Pending response format:", data);
+      }
+    })
+    .catch(err => {
+      console.error("Error loading pending students:", err);
+      alert("Failed to load pending students.");
     });
 
   fetch("get_pending_waitlisted.php?status=Waitlisted")
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error(`Waitlisted fetch failed. Status: ${res.status}`);
+      return res.json();
+    })
     .then(data => {
-      if (data.success) renderStudents(data.students, "waitlistContainer");
+      if (data.success && Array.isArray(data.students)) {
+        renderStudents(data.students, "waitlistContainer");
+      } else {
+        console.warn("Unexpected Waitlisted response format:", data);
+      }
+    })
+    .catch(err => {
+      console.error("Error loading waitlisted students:", err);
+      alert("Failed to load waitlisted students.");
     });
 }
 
+
+
+
 function renderStudents(data, containerId) {
   const container = document.getElementById(containerId);
+  if (!container) {
+    console.error(`Container with ID '${containerId}' not found.`);
+    return;
+  }
+
   container.innerHTML = "";
 
-  data.forEach(s => {
-    let actions = "";
+  if (!Array.isArray(data) || data.length === 0) {
+    container.innerHTML = `<p style="color: #888; font-style: italic;">No students found.</p>`;
+    return;
+  }
 
-    if (s.approved == 0 && s.status === 'Pending') {
+  data.forEach(s => {
+    const {
+      id,
+      firstName = '',
+      lastName = '',
+      status = '',
+      approved = 0,
+      school_grade = '',
+      book_grade = '',
+      parent1_name = '',
+      parent1_phone = '',
+      quran_level = 'Beginner'
+    } = s;
+
+    // Normalize and classify status
+    const rawStatus = (status || '').trim();
+    const normalizedStatus = rawStatus.toLowerCase();
+    let statusClass = '';
+    switch (normalizedStatus) {
+      case 'left':
+        statusClass = 'left';
+        break;
+      case 'waitlisted':
+      case 'pending':
+        statusClass = 'pending';
+        break;
+      default:
+        statusClass = 'active';
+    }
+
+    const displayStatus = rawStatus
+      ? rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1).toLowerCase()
+      : 'Pending';
+
+    // Fallback for missing values
+    const safeBookGrade = book_grade && book_grade !== 'null' ? book_grade : '—';
+    const safeParent = parent1_name || parent1_phone
+      ? `${parent1_name || '—'} (${parent1_phone || '-'})`
+      : '—';
+
+    // Log missing status for debug
+    if (!status) {
+      console.warn(`⚠️ Missing status for: ${firstName} ${lastName}`);
+    }
+
+    // Action buttons
+    let actions = "";
+    if (approved == 0 && normalizedStatus === 'pending') {
       actions = `
         <div class="card-actions">
-          <button onclick="approveStudent(${s.id})">✅ Approve</button>
-          <button onclick="rejectStudent(${s.id})">❌ Reject</button>
+          <button onclick="approveStudent(${id})">✅ Approve</button>
+          <button onclick="rejectStudent(${id})">❌ Reject</button>
         </div>`;
-    } else if (s.approved == 0 && s.status === 'Waitlisted') {
+    } else if (approved == 0 && normalizedStatus === 'waitlisted') {
       actions = `<div class="card-actions"><em style="color:#999;">⏳ Waitlisted</em></div>`;
     } else {
       actions = `
         <div class="card-actions">
-          <button onclick="editStudent(${s.id})">Edit</button>
-          <button onclick="markAsInactive(${s.id})">Mark as Left</button>
+          <button onclick="editStudent(${id})">Edit</button>
+          <button onclick="markAsInactive(${id})">Mark as Left</button>
         </div>`;
     }
 
- container.innerHTML += `
-  <div class="student-card" data-status="${s.status}">
-    <h3 class="student-name">${s.firstName} ${s.lastName}</h3>
-    <span class="status-badge ${s.status === 'Left' ? 'left' : 'active'}">${s.status}</span>
-    <p><strong>Grade:</strong> ${s.school_grade || ''} | <strong>Book Grade:</strong> ${s.book_grade || 'N/A'}</p>
-    <p><strong>Parent:</strong> ${s.parent1_name || ''} (${s.parent1_phone || ''})</p>
-    <p><strong>Quran Level:</strong> ${s.quran_level || 'Beginner'}</p>
-    ${actions}
-  </div>`;
-
+    // Final render block
+    container.innerHTML += `
+      <div class="student-card" data-status="${displayStatus}">
+        <h3 class="student-name">${firstName} ${lastName}</h3>
+        <span class="status-badge ${statusClass}">${displayStatus}</span>
+        <p><strong>Grade:</strong> ${school_grade} | <strong>Book Grade:</strong> ${safeBookGrade}</p>
+        <p><strong>Parent:</strong> ${safeParent}</p>
+        <p><strong>Quran Level:</strong> ${quran_level}</p>
+        ${actions}
+      </div>`;
   });
 }
 
+
 function approveStudent(id) {
   fetch(`finalize_approval.php?id=${id}`)
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`Server responded with status ${res.status}`);
+      }
+      return res.json();
+    })
     .then(data => {
-      if (data.success) {
+      if (data && data.success) {
         loadApprovedStudents();
         loadPendingAndWaitlisted();
       } else {
-        alert("Approval failed: " + data.message);
+        alert("Approval failed: " + (data.message || "Unknown error."));
+        console.error("Approval error:", data);
       }
+    })
+    .catch(error => {
+      console.error("Error approving student:", error);
+      alert("An error occurred while approving the student. See console for details.");
     });
 }
+
 
 function rejectStudent(id) {
   if (!confirm("Reject this student?")) return;
 
   fetch(`reject_student.php?id=${id}`)
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.status}`);
+      }
+      return res.json();
+    })
     .then(response => {
-      if (response.success) {
+      if (response && response.success) {
         loadPendingAndWaitlisted();
       } else {
-        alert("Failed to reject student.");
+        alert("Failed to reject student: " + (response.message || "Unknown error."));
+        console.error("Reject error:", response);
       }
+    })
+    .catch(error => {
+      console.error("Error rejecting student:", error);
+      alert("An error occurred while rejecting the student. See console for details.");
     });
 }
+
 
 function markAsInactive(id) {
   if (confirm("Mark this student as 'Left'?")) {
     fetch(`mark_student_left.php?id=${id}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        return res.json();
+      })
       .then(response => {
-        if (response.success) loadApprovedStudents();
-        else alert("Failed to update status.");
+        console.log("Response:", response);  // Debug line
+        if (response.success) {
+          alert("Student marked as left.");
+          loadApprovedStudents();
+        } else {
+          alert("Failed to update status: " + (response.message || "Unknown error"));
+        }
+      })
+      .catch(error => {
+        console.error("Error marking student as left:", error);
+        alert("Something went wrong. Check console for details.");
       });
   }
 }
+
 
 function getDropdowns() {
   fetch("fetch_dropdowns.php")
@@ -557,25 +803,30 @@ function closeStudentForm() {
 }
 
 function saveStudent() {
+  const getValue = (id, fallback = "") => {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : fallback;
+  };
+
   const student = {
-    id: document.getElementById("studentId").value.trim(),
-    firstName: document.getElementById("firstName").value.trim(),
-    lastName: document.getElementById("lastName").value.trim(),
-    school_grade: document.getElementById("schoolGrade").value.trim(),
-    book_grade: document.getElementById("bookGrade").value.trim(),
-    gender: document.getElementById("gender").value || "",
-    date_of_birth: document.getElementById("dateOfBirth").value || null,
-    address: document.getElementById("address").value.trim(),
-    quran_level: document.getElementById("quranLevel").value || "Beginner",
-    parent1_name: document.getElementById("parent1Name").value.trim(),
-    parent1_phone: document.getElementById("parent1Phone").value.trim(),
-    parent1_email: document.getElementById("parent1Email").value.trim(),
-    parent2_name: document.getElementById("parent2Name").value.trim(),
-    parent2_phone: document.getElementById("parent2Phone").value.trim(),
-    medical_conditions: document.getElementById("medical").value.trim(),
-    allergies: document.getElementById("allergies").value.trim(),
-    status: document.getElementById("status")?.value || "Active",
-    assigned_teacher_id: document.getElementById("assignedTeacher")?.value || null
+    id: getValue("studentId"),
+    firstName: getValue("firstName"),
+    lastName: getValue("lastName"),
+    school_grade: getValue("schoolGrade"),
+    book_grade: getValue("bookGrade"),
+    gender: getValue("gender", ""),
+    date_of_birth: getValue("dateOfBirth") || null,
+    address: getValue("address"),
+    quran_level: getValue("quranLevel", "Beginner"),
+    parent1_name: getValue("parent1Name"),
+    parent1_phone: getValue("parent1Phone"),
+    parent1_email: getValue("parent1Email"),
+    parent2_name: getValue("parent2Name"),
+    parent2_phone: getValue("parent2Phone"),
+    medical_conditions: getValue("medical"),
+    allergies: getValue("allergies"),
+    status: getValue("status", "Active"),
+    assigned_teacher_id: getValue("assignedTeacher", null)
   };
 
   fetch("save_student.php", {
@@ -583,21 +834,25 @@ function saveStudent() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(student)
   })
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+      return res.json();
+    })
     .then(response => {
-      if (response.success) {
+      if (response && response.success) {
         closeStudentForm();
         loadApprovedStudents();
       } else {
-        alert("Failed to save student.");
-        console.error("Server response:", response);
+        alert("Failed to save student: " + (response.message || "Unknown error"));
+        console.error("Save error response:", response);
       }
     })
     .catch(error => {
       console.error("Save error:", error);
-      alert("An error occurred while saving the student.");
+      alert("An error occurred while saving the student. See console for details.");
     });
 }
+
 
 function filterStudents() {
   const searchTerm = document.getElementById("searchInput").value.toLowerCase();
@@ -618,6 +873,11 @@ function filterStudents() {
 
 </script>
 
+<script>
+  document.getElementById("menu-toggle").addEventListener("click", () => {
+    document.getElementById("main-menu").classList.toggle("show");
+  });
+</script>
 
 </body>
 </html>

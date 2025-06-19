@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Register for Thaakireen Madrasah</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Great+Vibes&display=swap" rel="stylesheet">
   <style>
     body {
@@ -46,7 +48,7 @@
     }
 
     input, select {
-      width: 100%;
+      width: 95%;
       padding: 10px;
       border-radius: 8px;
       border: 1px solid #ccc;
@@ -93,12 +95,75 @@
       color: #387a5f;
       margin-bottom: 10px;
     }
+
+    @media (max-width: 600px) {
+  body {
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 2.2em;
+    margin-bottom: 10px;
+  }
+
+  .tagline {
+    font-size: 1em;
+    margin-bottom: 20px;
+    padding: 0 10px;
+  }
+
+  form {
+    padding: 25px;
+  }
+
+  label {
+    font-size: 0.95em;
+  }
+
+  input, select {
+    font-size: 1em;
+    height: 10px;
+    padding: 10px;
+  }
+
+button {
+  margin: 30px auto 0 auto; /* centers the button horizontally */
+  padding: 12px 24px;
+  background-color: #387a5f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+  display: block; /* required for margin auto to work */
+}
+
+
+  .success-message {
+    font-size: 1em;
+    padding: 0 10px;
+  }
+
+  .form-icon {
+    font-size: 48px;
+    margin-bottom: 6px;
+  }
+
+  select {
+    height: 35px;
+    padding: 10px;
+    font-size: 0.74em;
+  }
+}
+
   </style>
 </head>
 <body>
 
   <div class="form-icon">📚</div>
-  <h2>Join Thaakireen Madrasah</h2>
+  <h2>Join ibn Mas'ood Madrasah</h2>
   <div class="tagline">Inspire hearts with knowledge, character, and faith 🌙</div>
 
   <form id="registrationForm">

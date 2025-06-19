@@ -5,18 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Thaakireen - Registration</title>
   <style>
-    body{
-     font-family: Arial, sans-serif;
+    :root {
+      --main: #387a5f;
+      --hover: #2f654e;
+      --white-overlay: rgba(255, 255, 255, 0.85);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
       margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: url('uploads/login-bg.png') center/cover no-repeat fixed;
       min-height: 100vh;
-      background-image: url('uploads/login-bg.png'); /* Your soft image here */
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 20px;
+      position: relative;
     }
 
     body::before {
@@ -24,120 +32,146 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
       height: 100%;
+      width: 100%;
       background-color: rgba(255, 255, 255, 0.6);
       backdrop-filter: grayscale(60%);
       z-index: -1;
     }
 
-
     .registration-container {
-      padding: 30px 40px;
-      margin-bottom: 100px;
-      margin-top: 100px;
+      background-color: var(--white-overlay);
+      padding: 30px 25px;
       border-radius: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background-color: rgba(255, 255, 255, 0.85);
-      box-sizing: border-box;
-      max-width: 500px;
-      width: 90%;
-      border: 1px solid #387a5f;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      border: 1px solid var(--main);
     }
 
     .logo-container img {
-      width: 100%;
-      max-width: 120px;
+      width: 90px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+      font-size: 1.5rem;
     }
 
     form {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      width: 100%;
+      gap: 12px;
     }
 
-    form label,
-    form input,
-    form textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      font-size: 16px;
+    label {
+      text-align: left;
+      font-weight: bold;
+      font-size: 0.95rem;
+      color: #444;
     }
 
-    form button {
-      margin-top: 10px;
-      width: 50%;
+    input, textarea {
       padding: 10px;
-      background-color: #387a5f;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
       border-radius: 5px;
+      width: 100%;
     }
 
-    form button:hover {
-      background-color: #2f654e;
+    textarea {
+      resize: vertical;
     }
 
-    .registration-container p {
-      font-size: 14px;
-      text-align: center;
+    button {
+      background-color: var(--main);
+      color: white;
+      font-size: 1rem;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: var(--hover);
+    }
+
+    p {
+      font-size: 0.9rem;
+      color: #333;
+      margin-top: 15px;
     }
 
     a {
-      color: #387a5f;
+      color: var(--main);
       text-decoration: none;
     }
 
     a:hover {
       text-decoration: underline;
     }
+
+    @media (max-width: 480px) {
+      .registration-container {
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 1.25rem;
+      }
+
+      input, textarea {
+        font-size: 0.95rem;
+      }
+
+      button {
+        font-size: 0.95rem;
+      }
+    }
   </style>
 </head>
 <body>
   <main>
-    <div class="background-image">
-      <div class="registration-container">
-        <div class="logo-container">
-          <img src="uploads/Logo.png" alt="Thaakireen Logo" />
-        </div>
-        <h2>Register for Thaakireen</h2>
-
-        <form id="userRegistrationForm" action="register.php" method="post">
-          <label for="firstName">First Name:</label>
-          <input type="text" id="firstName" name="firstName" required />
-
-          <label for="lastName">Last Name:</label>
-          <input type="text" id="lastName" name="lastName" required />
-
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required />
-
-          <label for="phone">Phone Number:</label>
-          <input type="tel" id="phone" name="phone" required />
-
-          <label for="password">Choose Password:</label>
-          <input type="password" id="password" name="password" required />
-
-          <label for="notes">Additional Notes (optional):</label>
-          <textarea id="notes" name="notes" rows="4"></textarea>
-
-          <button type="submit">Submit Registration</button>
-        </form>
-
-        <p>
-          Thank you for registering. You will be able to log in once your profile is approved by an administrator.
-        </p>
-        <p>
-          Already registered? <a href="login.html">Login</a>
-        </p>
+    <div class="registration-container">
+      <div class="logo-container">
+        <img src="uploads/Logo.png" alt="Thaakireen Logo" />
       </div>
+      <h2>Register for Thaakireen</h2>
+
+      <form id="userRegistrationForm" action="register.php" method="post">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" required />
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" required />
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" name="phone" required />
+
+        <label for="password">Choose Password:</label>
+        <input type="password" id="password" name="password" required />
+
+        <!-- Hidden role for parent -->
+        <input type="hidden" name="isParent" value="1" />
+
+      
+        <button type="submit">Submit Registration</button>
+      </form>
+
+      <p>
+        Thank you for registering. You will be able to log in once your profile is approved by an administrator.
+      </p>
+      <p>
+        Already registered? <a href="login.html">Login</a>
+      </p>
     </div>
   </main>
 </body>

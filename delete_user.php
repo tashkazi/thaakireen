@@ -34,8 +34,14 @@ try {
     $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
     $stmt->execute([$userId]);
 
-    // ✅ Optional: delete from other role-specific tables
-    // $pdo->prepare("DELETE FROM teachers WHERE user_id = ?")->execute([$userId]);
+    // ✅ Delete from summer_camp_teachers if applicable
+    $pdo->prepare("DELETE FROM summer_camp_teachers WHERE user_id = ?")->execute([$userId]);
+
+    // ✅ Unlink from registration_requests if parent
+    $pdo->prepare("UPDATE registration_requests SET parent_user_id = NULL WHERE parent_user_id = ?")->execute([$userId]);
+
+    // ✅ Optional: Delete from employee_directory if exists
+    $pdo->prepare("DELETE FROM employee_directory WHERE email = ?")->execute([$email]);
 
     // ✅ Audit log entry
     $performedBy = $_SESSION['userName'] ?? 'Unknown User';
@@ -47,7 +53,7 @@ try {
 
     echo json_encode([
         "success" => true,
-        "message" => "User deleted and action logged"
+        "message" => "User deleted and related records cleaned"
     ]);
 
 } catch (PDOException $e) {

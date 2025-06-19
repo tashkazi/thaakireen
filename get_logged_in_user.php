@@ -8,13 +8,12 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Connect to database to fetch title and first name
 try {
     $pdo = new PDO("mysql:host=localhost;dbname=thaakireen", "root", "Tashreeka94_", [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
 
-    $stmt = $pdo->prepare("SELECT title, firstName FROM users WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT title, firstName, isParent FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -23,6 +22,7 @@ try {
             "success" => true,
             "title" => $user['title'] ?? '',
             "firstName" => $user['firstName'] ?? '',
+            "isParent" => (int)($user['isParent'] ?? 0),
             "name" => trim(($user['title'] ?? '') . ' ' . ($user['firstName'] ?? ''))
         ]);
     } else {

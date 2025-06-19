@@ -11,7 +11,7 @@ try {
             id, 
             firstName, 
             lastName, 
-            title,            -- ✅ include title
+            title,
             email, 
             isAdmin, 
             isTeacher, 
@@ -20,7 +20,8 @@ try {
             isCoordinator, 
             isSupervisor, 
             isVolunteer,
-            isSummerCampTeacher
+            isSummerCampTeacher,
+            isParent         -- ✅ added here
         FROM users 
         WHERE approval_status = 'approved'
     ");

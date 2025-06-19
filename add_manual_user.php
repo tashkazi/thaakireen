@@ -17,7 +17,7 @@ $phone = trim($data['phone'] ?? '');
 $roles = [
     'isTeacher', 'isAdmin', 'isExaminer',
     'isPrincipal', 'isCoordinator', 'isSupervisor',
-    'isVolunteer', 'isSummerCampTeacher'
+    'isVolunteer', 'isSummerCampTeacher', 'isParent' // ✅ Added
 ];
 
 if (!$first || !$last || !$email) {
@@ -37,18 +37,27 @@ foreach ($roles as $role) {
 }
 
 $stmt->bind_param(
-    str_repeat("s", 5) . str_repeat("i", count($roles)), // s = 5 string fields (first, last, title, email, phone)
+    str_repeat("s", 5) . str_repeat("i", count($roles)),
     ...$params
 );
 
 if ($stmt->execute()) {
     $newUserId = $conn->insert_id;
 
+    // ✅ Add to summer_camp_teachers if applicable
     if (!empty($data['isSummerCampTeacher'])) {
         $campStmt = $conn->prepare("INSERT INTO summer_camp_teachers (user_id, first_name, last_name, email) VALUES (?, ?, ?, ?)");
         $campStmt->bind_param("isss", $newUserId, $first, $last, $email);
         $campStmt->execute();
         $campStmt->close();
+    }
+
+    // ✅ Auto-link parent to registration_requests if applicable
+    if (!empty($data['isParent'])) {
+        $linkStmt = $conn->prepare("UPDATE registration_requests SET parent_user_id = ? WHERE parent1_email = ?");
+        $linkStmt->bind_param("is", $newUserId, $email);
+        $linkStmt->execute();
+        $linkStmt->close();
     }
 
     echo json_encode(["success" => true]);

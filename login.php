@@ -30,8 +30,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION['isExaminer']           = (int)($user['isExaminer'] ?? 0);
             $_SESSION['isVolunteer']          = (int)($user['isVolunteer'] ?? 0);
             $_SESSION['isSummerCampTeacher']  = (int)($user['isSummerCampTeacher'] ?? 0);
+            $_SESSION['isParent']             = (int)($user['isParent'] ?? 0); // ✅ New
 
-            // Store teacher_id from teachers table
+            // Get teacher ID if applicable
             if ($_SESSION['isTeacher']) {
                 $stmt2 = $pdo->prepare("SELECT teacher_id FROM teachers WHERE user_id = ?");
                 $stmt2->execute([$user['id']]);
@@ -39,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $_SESSION['teacher_id'] = $teacher['teacher_id'] ?? null;
             }
 
-            // Store summer_camp_teacher_id from summer_camp_teachers table
+            // Get summer camp teacher ID
             if ($_SESSION['isSummerCampTeacher']) {
                 $stmt3 = $pdo->prepare("SELECT id FROM summer_camp_teachers WHERE user_id = ?");
                 $stmt3->execute([$user['id']]);
@@ -47,10 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $_SESSION['summer_camp_teacher_id'] = $campTeacher['id'] ?? null;
             }
 
-            // Optional: label user type for UI
-            $_SESSION['userType'] = 'user';
-
-            // ✅ Add human-readable role for audit logging
+            // Assign role name
             if ($_SESSION['isAdmin']) {
                 $_SESSION['role'] = 'Admin';
             } elseif ($_SESSION['isExaminer']) {
@@ -67,16 +65,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $_SESSION['role'] = 'Principal';
             } elseif ($_SESSION['isVolunteer']) {
                 $_SESSION['role'] = 'Volunteer';
+            } elseif ($_SESSION['isParent']) {
+                $_SESSION['role'] = 'Parent'; // ✅ New
             } else {
                 $_SESSION['role'] = 'User';
             }
 
-            // Redirect to homepage
-            if (!headers_sent()) {
-                header("Location: Homepage.html");
-            } else {
-                echo "<script>window.location.href='Homepage.html';</script>";
-            }
+            // ✅ Set sessionStorage from PHP
+            $redirectUrl = $_SESSION['isParent'] ? 'ParentDashboard.html' : 'Homepage.html';
+            echo "<script>
+                sessionStorage.setItem('userId', " . json_encode($user['id']) . ");
+                sessionStorage.setItem('role', " . json_encode($_SESSION['role']) . ");
+                sessionStorage.setItem('name', " . json_encode($_SESSION['name']) . ");
+                window.location.href = '$redirectUrl';
+            </script>";
             exit();
         } else {
             echo "<script>alert('Your account is not yet approved. Please wait for admin approval.'); window.location.href='login.html';</script>";

@@ -21,9 +21,11 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     ]);
 
+    // ✅ Include isParent
     $roles = [
         'isAdmin', 'isTeacher', 'isExaminer',
-        'isPrincipal', 'isCoordinator', 'isSupervisor', 'isVolunteer', 'isSummerCampTeacher'
+        'isPrincipal', 'isCoordinator', 'isSupervisor',
+        'isVolunteer', 'isSummerCampTeacher', 'isParent' // ✅ Added
     ];
 
     $setParts = [
@@ -46,7 +48,7 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
 
-    // 🔁 Sync summer_camp_teachers table
+    // ✅ Sync summer_camp_teachers table
     $isCamp = isset($data['isSummerCampTeacher']) && $data['isSummerCampTeacher'] == 1;
 
     if ($isCamp) {
@@ -62,6 +64,13 @@ try {
         }
     } else {
         $pdo->prepare("DELETE FROM summer_camp_teachers WHERE user_id = ?")->execute([$userId]);
+    }
+
+    // ✅ Auto-link parent to registration_requests if applicable
+    $isParent = isset($data['isParent']) && $data['isParent'] == 1;
+    if ($isParent) {
+        $linkStmt = $pdo->prepare("UPDATE registration_requests SET parent_user_id = ? WHERE parent1_email = ?");
+        $linkStmt->execute([$userId, $email]);
     }
 
     echo json_encode(["success" => true]);

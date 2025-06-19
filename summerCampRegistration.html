@@ -93,15 +93,50 @@
       50% { transform: translateY(50vh) rotate(180deg); }
       100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
     }
+
+    @media (max-width: 600px) {
+  header {
+    font-size: 22px;
+    padding: 20px 10px;
+  }
+
+  .container {
+    margin: 20px 10px;
+    padding: 25px;
+    border-radius: 12px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  label {
+    font-size: 15px;
+  }
+
+  input, textarea, select {
+    font-size: 15px;
+    padding: 8px;
+  }
+
+  button {
+    font-size: 16px;
+    padding: 10px 16px;
+  }
+
+  .message {
+    font-size: 16px;
+  }
+
+  .floating-emoji {
+    font-size: 20px;
+  }
+}
+
   </style>
 </head>
 <body>
-  <script>
-  const url = new URL(window.location.href);
-  if (url.searchParams.get("access") !== "camp2025") {
-    document.body.innerHTML = "<h2 style='text-align:center;margin-top:100px;'>Access Denied</h2>";
-  }
-</script>
+ 
   
 
 <header>

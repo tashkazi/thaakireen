@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Thaakireen - Medals & Awards</title>
+  <style>
+    :root {
+      --primary: #387a5f;
+      --dark: #2e5e4e;
+      --light-bg: #f4f9f7;
+    }
+
+    body {
+      margin: 0;
+      padding-bottom: 60px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-bg);
+    }
+
+    header, footer {
+      background-color: var(--primary);
+      color: #fff;
+      padding: 10px 20px;
+      width: 100%;
+      position: fixed;
+      z-index: 1000;
+    }
+
+    header { top: 0; }
+    footer { bottom: 0; text-align: center; }
+
+    #header-inner {
+      display: flex;
+      margin-right: 30px;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    #logo img { max-height: 50px; }
+
+    #main-nav { display: flex; justify-content: flex-end; flex-grow: 1; }
+
+    #main-menu {
+      list-style: none;
+      display: flex;
+      margin: 0;
+    }
+
+    #main-menu li a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      padding: 10px;
+      margin-right: 30px;
+      transition: 0.3s;
+    }
+
+    #main-menu li a:hover { text-decoration: underline; }
+
+    #menu-toggle {
+      display: none;
+      font-size: 28px;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 120px auto 60px;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 { text-align: center; color: #2e5e4e; }
+    h3 { margin-top: 40px; color: var(--dark); }
+
+    ol { padding-left: 20px; }
+
+    button {
+      padding: 10px 20px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover { background-color: #2e5e4e; }
+
+    @media (max-width: 768px) {
+      #main-menu {
+        display: none;
+        flex-direction: column;
+        background-color: var(--primary);
+        position: absolute;
+        top: 60px;
+        right: 0;
+        width: 100%;
+        padding: 10px 0;
+      }
+
+      #main-menu.show { display: flex; }
+
+      #main-menu li {
+        text-align: center;
+        padding: 10px 0;
+        border-top: 1px solid rgba(255,255,255,0.1);
+      }
+
+      #menu-toggle {
+        display: block;
+        margin-left: 230px;
+      }
+
+      .container {
+        margin: 120px 10px 60px;
+        padding: 20px 15px;
+      }
+
+      @media (max-width: 768px) {
+  h1 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    margin-top: 30px;
+  }
+
+  ol {
+    padding-left: 15px;
+    font-size: 0.95rem;
+  }
+
+  #yearSelect {
+    font-size: 0.9rem;
+    padding: 6px 10px;
+  }
+
+  label[for="yearSelect"] {
+    font-size: 0.95rem;
+  }
+
+  button {
+    font-size: 0.95rem;
+    padding: 8px 16px;
+    margin-top: 20px;
+  }
+
+  #topWinners h4 {
+    font-size: 1rem;
+    margin-top: 15px;
+  }
+
+  .container {
+    padding: 15px;
+    box-shadow: none;
+  }
+
+  section {
+    margin-bottom: 20px;
+  }
+
+  header,
+  footer {
+    font-size: 0.95rem;
+    padding: 8px 15px;
+  }
+
+  #main-menu li a {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  #menu-toggle {
+    margin-left: auto;
+    font-size: 24px;
+  }
+}
+
+    }
+
+    @media print {
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+  }
+
+  header, footer, #menu-toggle, #main-menu, select, button {
+    display: none !important;
+  }
+
+  .container {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  section {
+    page-break-inside: avoid;
+    margin-bottom: 25px;
+  }
+
+  h1, h3, h4 {
+    color: black !important;
+  }
+
+  ol {
+    padding-left: 20px;
+  }
+
+  ol li {
+    margin-bottom: 5px;
+  }
+
+  @page {
+    margin: 20mm;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+<header>
+  <div id="header-inner">
+    <div id="logo"><img src="uploads/Logo.png" alt="Thaakireen Logo"></div>
+    <button id="menu-toggle">&#9776;</button>
+    <nav>
+      <ul id="main-menu">
+        <li><a href="Homepage.html">Home</a></li>
+        <li><a href="Profile.html">My Profile</a></li>
+        <li><a href="Login.html">Logout</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+<h1>🏅 Ibn Masood Madrasah – Medal Recipients</h1>
+<div style="text-align: center; margin-top: 10px; font-size: 0.95rem; color: #555; font-style: italic;">
+  This page is still in <strong>beta</strong>. The school year has ended, but we’re refining the system for next year’s awards, in shaa Allah.
+</div>
+
+
+  <div style="text-align: center; margin-bottom: 30px;">
+    <label for="yearSelect"><strong>Select School Year:</strong></label>
+    <select id="yearSelect" onchange="reloadAllMedals()" style="margin-left: 10px; padding: 6px 12px;">
+      <option value="2024/2025" selected>2024/2025</option>
+      <option value="2023/2024">2023/2024</option>
+      <option value="2022/2023">2022/2023</option>
+    </select>
+  </div>
+
+  <section>
+  <section>
+    <h3>🏆 Top 3 Students Per Grade (Overall Performance)</h3>
+    <div id="topWinners"><p>Loading...</p></div>
+  </section>
+
+
+    <h3>📖 Students Who Have Completed the Qaida</h3>
+    <ol id="qaidaList"><li>Loading...</li></ol>
+  </section>
+
+  <section>
+    <h3>📘 Students Who Have Completed the Entire Quran</h3>
+    <ol id="quranList"><li>Loading...</li></ol>
+  </section>
+
+
+  <section>
+    <h3>📒 Students Who Have Completed the Entire Duaa Book</h3>
+    <ol id="duaaList"><li>Loading...</li></ol>
+  </section>
+
+  <section>
+    <h3>🕋 Students Who Have Completed Surah Levels (Bright Category)</h3>
+    <ol id="surahLevelList">
+      <li>__________________________ (LV: ___)</li>
+      <li>__________________________ (LV: ___)</li>
+      <li>__________________________ (LV: ___)</li>
+    </ol>
+  </section>
+
+  <section>
+    <h3>🌟 Students with the Best Akhlaaq <small>(1 student per class)</small></h3>
+    <ol id="akhlaaqList">
+      <li>__________________________</li>
+    </ol>
+  </section>
+
+  <section>
+    <h3>📅 Students with the Best Attendance <small>(152 days or more)</small></h3>
+    <ol id="attendanceList"><li>Loading...</li></ol>
+  </section>
+
+  <div style="text-align:center; margin-top: 40px;">
+    <button onclick="reloadAllMedals()">✨ Reload Medals</button>
+  </div>
+
+  <div style="text-align:center; margin-top: 15px;">
+  <button onclick="window.print()">🖨️ Print This Page</button>
+</div>
+
+</main>
+
+
+
+<footer>
+  <p>&copy; 2024 Thaakireen. All rights reserved.</p>
+</footer>
+
+<script>
+document.getElementById("menu-toggle").addEventListener("click", () => {
+  document.getElementById("main-menu").classList.toggle("show");
+});
+
+function getSelectedYear() {
+  return document.getElementById('yearSelect').value;
+}
+
+function reloadAllMedals() {
+  loadTopWinners();
+  loadCompletedQaida();
+  loadCompletedQuran();
+  loadCompletedDuaa();
+  loadBestAttendance();
+}
+
+// 🥇 Top 3 per grade
+function loadTopWinners() {
+  fetch(`get_medal_winners.php?year=${getSelectedYear()}`)
+    .then(res => res.json())
+    .then(data => {
+      const container = document.getElementById('topWinners');
+      container.innerHTML = '';
+      for (const grade in data) {
+        const title = document.createElement('h4');
+        title.textContent = `Grade ${grade}`;
+        container.appendChild(title);
+
+        const ol = document.createElement('ol');
+        data[grade].forEach((student, i) => {
+          const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
+          const li = document.createElement('li');
+          li.innerHTML = `${medal} <strong>${student.student_name}</strong> – Total Score: ${student.total_score}`;
+          ol.appendChild(li);
+        });
+        container.appendChild(ol);
+      }
+    })
+    .catch(() => {
+      document.getElementById('topWinners').innerHTML = '<p>Error loading data.</p>';
+    });
+}
+
+// 📖 Qaida
+function loadCompletedQaida() {
+  fetch(`get_completed_qaida.php?year=${getSelectedYear()}`)
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById('qaidaList');
+      list.innerHTML = '';
+      data.forEach(name => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        list.appendChild(li);
+      });
+    });
+}
+
+// 📘 Quran
+function loadCompletedQuran() {
+  fetch(`get_completed_quran.php?year=${getSelectedYear()}`)
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById('quranList');
+      list.innerHTML = '';
+      data.forEach(name => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        list.appendChild(li);
+      });
+    });
+}
+
+// 📒 Duaa
+function loadCompletedDuaa() {
+  fetch(`get_completed_duaa.php?year=${getSelectedYear()}`)
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById('duaaList');
+      list.innerHTML = '';
+      data.forEach(name => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        list.appendChild(li);
+      });
+    });
+}
+
+// 📅 Attendance
+function loadBestAttendance() {
+  fetch(`get_best_attendance.php?year=${getSelectedYear()}`)
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById('attendanceList');
+      list.innerHTML = '';
+      data.forEach(entry => {
+        const li = document.createElement('li');
+        li.textContent = `${entry.name} (${entry.days} / ${entry.total_days})`;
+        list.appendChild(li);
+      });
+    });
+}
+</script>
+
+</body>
+</html>
