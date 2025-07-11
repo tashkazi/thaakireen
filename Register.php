@@ -22,13 +22,12 @@ try {
         $notes      = trim($_POST['notes'] ?? '');
         $password   = $_POST['password'] ?? '';
 
-        // Validate required fields
+   
         if (!$firstName || !$lastName || !$email || !$password) {
             echo "<script>alert('Please fill in all required fields.'); window.history.back();</script>";
             exit;
         }
 
-        // Check if email is already registered
         $checkStmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
         $checkStmt->execute([$email]);
         if ($checkStmt->rowCount() > 0) {
@@ -36,10 +35,8 @@ try {
             exit;
         }
 
-        // Hash password securely
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        // Insert new user
         $stmt = $pdo->prepare("
             INSERT INTO users (
                 firstName, lastName, email, phone, notes, password,

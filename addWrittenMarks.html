@@ -273,41 +273,41 @@ button[type="submit"]:hover {
     </div>
   </div>
 
-  <form id="updateWrittenMarksForm">
-    <input type="hidden" id="studentIdInput" name="student_id">
-    <input type="hidden" id="teacherIdInput" name="teacher_id">
-    <input type="hidden" id="examinerIdInput" name="examiner_id">
-    <input type="hidden" id="gradeInput" name="grade">
 
-    <h3>Written Subjects</h3>
-    <table>
-      <thead><tr><th>Subject</th><th>Marks (out of 100)</th></tr></thead>
-      <tbody>
-        <tr><td>Aqaa’id</td><td><input type="number" id="aqaaid_score" name="aqaaid_score" max="100" min="0" required></td></tr>
-        <tr><td>Akhlaaq & Adab</td><td><input type="number" id="akhlaaq_adab_score" name="akhlaaq_adab_score" max="100" min="0" required></td></tr>
-        <tr><td>Taareekh</td><td><input type="number" id="taareekh_score" name="taareekh_score" max="100" min="0" required></td></tr>
-      </tbody>
-    </table>
+ <form id="updateWrittenMarksForm">
+  <input type="hidden" id="studentIdInput" name="student_id">
+  <input type="hidden" id="teacherIdInput" name="teacher_id">
+  <input type="hidden" id="examinerIdInput" name="examiner_id">
+  <input type="hidden" id="gradeInput" name="grade">
 
-    <h3 style="margin-top: 30px;">Oral Subjects</h3>
-    <table>
-      <thead><tr><th>Subject</th><th>Marks (out of 100)</th></tr></thead>
-      <tbody>
-        <tr><td>Quran Recitation</td><td><input type="number" id="quran_recitation_score" name="quran_recitation_score" max="100" min="0" required></td></tr>
-        <tr><td>Surah Memorization</td><td><input type="number" id="surah_memorization_score" name="surah_memorization_score" max="100" min="0" disabled></td></tr>
-        <tr><td>Dua Memorization</td><td><input type="number" id="dua_score" name="dua_score" max="100" min="0" disabled></td></tr>
-        <tr><td>Ahadeeth</td><td><input type="number" id="ahadeeth_score" name="ahadeeth_score" max="100" min="0" required></td></tr>
-      </tbody>
-    </table>
+  <h3>Written Subjects</h3>
+  <table>
+    <thead><tr><th>Subject</th><th>Marks (out of 100)</th></tr></thead>
+    <tbody>
+      <tr><td>Fiqh</td><td><input type="number" id="fiqh_score" name="fiqh_score" max="100" min="0"></td></tr>
+      <tr><td>Aqaa’id</td><td><input type="number" id="aqaaid_score" name="aqaaid_score" max="100" min="0"></td></tr>
+      <tr><td>Akhlaaq & Adab</td><td><input type="number" id="akhlaaq_adab_score" name="akhlaaq_adab_score" max="100" min="0"></td></tr>
+      <tr><td>Taareekh</td><td><input type="number" id="taareekh_score" name="taareekh_score" max="100" min="0"></td></tr>
+    </tbody>
+  </table>
 
-    <div class="form-actions">
-     <button type="submit">Save Marks</button>
+  <h3 style="margin-top: 30px;">Oral Subjects</h3>
+  <table>
+    <thead><tr><th>Subject</th><th>Marks (out of 100)</th></tr></thead>
+    <tbody>
+      <tr><td>Quran Recitation</td><td><input type="number" id="quran_recitation_score" name="quran_recitation_score" max="100" min="0"></td></tr>
+      <tr><td>Surah Memorization</td><td><input type="number" id="surah_memorization_score" name="surah_memorization_score" max="100" min="0"></td></tr>
+      <tr><td>Dua Memorization</td><td><input type="number" id="dua_score" name="dua_score" max="100" min="0"></td></tr>
+      <tr><td>Ahadeeth</td><td><input type="number" id="ahadeeth_score" name="ahadeeth_score" max="100" min="0"></td></tr>
+    </tbody>
+  </table>
 
-    </div>
-  </form>
+  <div class="form-actions">
+    <button type="submit">Save Marks</button>
+  </div>
+</form>
+
 </div>
-
-
 <footer>
     <p>&copy; 2024 Thaakireen. All rights reserved.</p>
 </footer>
@@ -391,18 +391,26 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 
 
+
 function clearMarkSheet() {
-    ["studentIdInput", "teacherIdInput", "examinerIdInput", "gradeInput"].forEach(id => {
+    const fieldIds = [
+        "studentIdInput", "teacherIdInput", "examinerIdInput", "gradeInput",
+        "aqaaid_score", "akhlaaq_adab_score", "taareekh_score", "fiqh_score",
+        "quran_recitation_score", "surah_memorization_score", "dua_score", "ahadeeth_score"
+    ];
+
+    fieldIds.forEach(id => {
         const input = document.getElementById(id);
-        if (input) input.value = "";
-    });
-    ["aqaaid_score", "akhlaaq_adab_score", "taareekh_score",
-     "quran_recitation_score", "surah_memorization_score",
-     "dua_score", "ahadeeth_score"].forEach(id => {
-        const input = document.getElementById(id);
-        if (input) input.value = "";
+        if (input) {
+            input.value = "";
+            if (id === "surah_memorization_score") {
+                input.readOnly = true; // Optional: lock it again when cleared
+                input.style.backgroundColor = "#f3f3f3"; // Optional: visual cue for locked field
+            }
+        }
     });
 }
+
 
 function roundToWhole(val) {
     const num = parseFloat(val);
@@ -413,6 +421,8 @@ function loadStudentMarks() {
     const studentId = document.getElementById("studentSelect").value;
     if (!studentId) return clearMarkSheet();
 
+    console.log("Selected student ID:", studentId);
+
     fetch(`fetch_marks.php?student_id=${studentId}`)
         .then(res => res.json())
         .then(data => {
@@ -421,11 +431,18 @@ function loadStudentMarks() {
                 return clearMarkSheet();
             }
 
+            console.log("Fetched data:", data);
+            console.log("AQAAID:", data.aqaaid_score, "Rounded:", roundToWhole(data.aqaaid_score));
+            console.log("Memorization Score:", data.surah_memorization_score);
+
             document.getElementById("studentIdInput").value = studentId;
-            document.getElementById("teacherIdInput").value = data.teacher_id || '';
+   document.getElementById("teacherIdInput").value = data.teacher_id ?? teacherId ?? '';
+
+
             document.getElementById("examinerIdInput").value = data.examiner_id || '';
             document.getElementById("gradeInput").value = data.grade || '';
 
+            document.getElementById("fiqh_score").value = roundToWhole(data.fiqh_score);
             document.getElementById("aqaaid_score").value = roundToWhole(data.aqaaid_score);
             document.getElementById("akhlaaq_adab_score").value = roundToWhole(data.akhlaaq_adab_score);
             document.getElementById("taareekh_score").value = roundToWhole(data.taareekh_score);
@@ -433,6 +450,11 @@ function loadStudentMarks() {
             document.getElementById("surah_memorization_score").value = roundToWhole(data.surah_memorization_score);
             document.getElementById("dua_score").value = roundToWhole(data.dua_score);
             document.getElementById("ahadeeth_score").value = roundToWhole(data.ahadeeth_score);
+
+            // Optional: log Quran exam date (for audit or update later)
+            if (data.quran_exam_date) {
+                console.log("Latest Quran Exam Date:", data.quran_exam_date);
+            }
         })
         .catch(err => {
             console.error("Error loading marks:", err);
@@ -440,6 +462,7 @@ function loadStudentMarks() {
             clearMarkSheet();
         });
 }
+
 
 function setupFormSubmit() {
     const form = document.getElementById("updateWrittenMarksForm");
@@ -493,7 +516,6 @@ function setupFormSubmit() {
         });
     });
 }
-
 </script>
 
 <script>

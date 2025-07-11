@@ -9,19 +9,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = filter_var($_POST["email"] ?? '', FILTER_SANITIZE_EMAIL);
     $password = $_POST["password"] ?? '';
 
-    // Find user by email
+
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user && password_verify($password, $user['password'])) {
         if ((int)$user['isApproved'] === 1) {
-            // Store session details
+    
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['name'] = $user['firstName'] . ' ' . $user['lastName'];
-            $_SESSION['userName'] = $_SESSION['name']; // ✅ For audit logs
+            $_SESSION['userName'] = $_SESSION['name']; 
 
-            // Store all role flags
+       
             $_SESSION['isAdmin']              = (int)($user['isAdmin'] ?? 0);
             $_SESSION['isTeacher']            = (int)($user['isTeacher'] ?? 0);
             $_SESSION['isPrincipal']          = (int)($user['isPrincipal'] ?? 0);
@@ -30,9 +30,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION['isExaminer']           = (int)($user['isExaminer'] ?? 0);
             $_SESSION['isVolunteer']          = (int)($user['isVolunteer'] ?? 0);
             $_SESSION['isSummerCampTeacher']  = (int)($user['isSummerCampTeacher'] ?? 0);
-            $_SESSION['isParent']             = (int)($user['isParent'] ?? 0); // ✅ New
+            $_SESSION['isParent']             = (int)($user['isParent'] ?? 0); 
 
-            // Get teacher ID if applicable
+           
             if ($_SESSION['isTeacher']) {
                 $stmt2 = $pdo->prepare("SELECT teacher_id FROM teachers WHERE user_id = ?");
                 $stmt2->execute([$user['id']]);
@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $_SESSION['teacher_id'] = $teacher['teacher_id'] ?? null;
             }
 
-            // Get summer camp teacher ID
+         
             if ($_SESSION['isSummerCampTeacher']) {
                 $stmt3 = $pdo->prepare("SELECT id FROM summer_camp_teachers WHERE user_id = ?");
                 $stmt3->execute([$user['id']]);
@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $_SESSION['summer_camp_teacher_id'] = $campTeacher['id'] ?? null;
             }
 
-            // Assign role name
+          
             if ($_SESSION['isAdmin']) {
                 $_SESSION['role'] = 'Admin';
             } elseif ($_SESSION['isExaminer']) {
@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $_SESSION['role'] = 'User';
             }
 
-            // ✅ Set sessionStorage from PHP
+            
             $redirectUrl = $_SESSION['isParent'] ? 'ParentDashboard.html' : 'Homepage.html';
             echo "<script>
                 sessionStorage.setItem('userId', " . json_encode($user['id']) . ");

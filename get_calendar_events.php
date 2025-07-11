@@ -1,7 +1,6 @@
 <?php
 header('Content-Type: application/json');
 
-// DB connection
 $conn = new mysqli("localhost", "root", "Tashreeka94_", "thaakireen");
 if ($conn->connect_error) {
     http_response_code(500);
@@ -9,7 +8,6 @@ if ($conn->connect_error) {
     exit;
 }
 
-// Fetch upcoming events (limit 10)
 $sql = "SELECT title, date FROM calendar_events WHERE date >= CURDATE() ORDER BY date ASC LIMIT 10";
 $result = $conn->query($sql);
 

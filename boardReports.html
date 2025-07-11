@@ -147,7 +147,7 @@
   background-color: #2f654e;
 }
 
-/* ✅ Show only on mobile */
+
 @media only screen and (max-width: 767px) {
   #mobileWarning {
     display: flex;
@@ -277,7 +277,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const res = await fetch("get_enrollment_stats.php");
     const data = await res.json();
 
-    // 📘 Chart: By School Grade
     const schoolGrades = Object.keys(data.bySchoolGrade);
     const schoolCounts = Object.values(data.bySchoolGrade);
 
@@ -302,7 +301,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // 📙 Chart: By Book Grade
+ 
     const bookGrades = Object.keys(data.byBookGrade);
     const bookCounts = Object.values(data.byBookGrade);
 
@@ -327,7 +326,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // 📅 Chart: Enrollment Trend by Year
+
     const years = Object.keys(data.byYear);
     const yearCounts = Object.values(data.byYear);
     const growth = yearCounts.map((val, i, arr) => {
@@ -410,7 +409,6 @@ async function loadQuranProgress() {
     const container = document.getElementById("quranProgress");
     container.innerHTML = "";
 
-    // 🟩 Chart 1: % Students Met Surah Goal (Bar)
     const canvas1 = document.createElement("canvas");
     new Chart(canvas1, {
       type: 'bar',
@@ -454,7 +452,7 @@ async function loadQuranProgress() {
     container.appendChild(canvas1);
     container.appendChild(document.createElement("br"));
 
-    // 🟨 Chart 2: Memorization Accuracy (Stacked Bar)
+    
     const scoreLabels = ['80–100%', '60–79%', '<60%'];
     const scoreKeys = ['above80', 'between60and79', 'below60'];
     const canvas2 = document.createElement("canvas");
@@ -496,7 +494,7 @@ async function loadQuranProgress() {
     container.appendChild(canvas2);
     container.appendChild(document.createElement("br"));
 
-    // 🟥 Chart 3: Goal Alignment (Stacked Bar)
+ 
     const alignKeys = ['behind', 'on', 'above'];
     const alignColors = ['#ef5350', '#ffa726', '#66bb6a'];
     const canvas3 = document.createElement("canvas");

@@ -87,7 +87,7 @@
     }
 
     #reportCard {
-      padding: 40px;
+      padding: 50px;
       max-width: 800px;
       margin: 40px auto;
       border: 2px solid #387a5f;
@@ -95,6 +95,12 @@
       font-family: 'Times New Roman', Times, serif;
       position: relative;
     }
+
+td, textarea {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
 
     .watermark {
       position: absolute;
@@ -126,9 +132,10 @@
     }
 
     th, td {
-      padding: 8px;
-      text-align: center;
-    }
+  padding: 16px 20px;  /* Was 8px before */
+  text-align: center;
+}
+
 
     button {
       background-color: #387a5f;
@@ -144,6 +151,32 @@
     button:hover {
       background-color: #2f6b54;
     }
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 20px; /* More vertical spacing between rows */
+  margin-top: 30px;
+}
+
+th, td {
+  padding: 20px 16px;      /* More space above and below text */
+  font-size: 16px;
+  vertical-align: top;
+  background-color: #fffefb;
+  border: 1px solid #ccc;
+}
+
+th {
+  background-color: #d0e7de;
+  font-weight: bold;
+  text-align: center;
+}
+
+td:nth-child(3) {
+  line-height: 1.8;        /* Extra space between lines in the comment */
+}
+
 
 #mobileWarning {
   display: none;
@@ -227,13 +260,38 @@
     display: none !important;
   }
 }
+#reportCard {
+  width: 100%;
+  max-width: 750px; /* Letter size with margin */
+  padding: 40px;
+  font-size: 12pt;
+  background: white;
+  margin: 0 auto;
+}
+
+#reportCard table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+#reportCard th, #reportCard td {
+  padding: 8px;
+  vertical-align: top;
+  text-align: left;
+}
+
+#reportCard td.comment-cell {
+  min-height: 100px;  /* Ensures enough vertical space */
+  line-height: 1.5;
+}
 
   </style>
 </head>
 <body>
  <div id="mobileWarning">
   <div class="mobile-message">
-    <img src="uploads/Logo.png" alt="Thaakireen Logo" class="warning-logo">
+    <img src="uploads/newLogo.png" alt="Thaakireen Logo" class="warning-logo">
     <h2>Mobile Access Limited</h2>
     <p>
       📵 This page is best viewed on a <strong>desktop or tablet</strong>.<br>
@@ -270,13 +328,12 @@
 </div>
 
 <div id="reportCard">
-  <div class="watermark"><img src="uploads/Logo.png" alt="Watermark" style="width: 700px;"></div>
+  <div class="watermark"><img src="uploads/newLogo.png" alt="Watermark" style="width: 700px;"></div>
 
   <div class="report-content">
     <div style="text-align:center;">
-      <img src="uploads/Logo.png" alt="Logo" style="max-width: 100px;"><br>
-      <h2>Thaakireen Islamic Institute</h2>
-      <h3>Student Report Card - <span id="schoolYear">2024/2025</span></h3>
+      <img src="uploads/newLogo.png" alt="Logo" style="max-width: 300px;"><br>
+    
     </div>
 
     <p><strong>Student Name:</strong> <span id="studentName"></span></p>
@@ -284,27 +341,50 @@
 
     <table>
   <thead>
+  <!-- Optional main heading centered above the table -->
   <tr>
-    <th style="text-align: left;">Subject</th>
-    <th>Score</th>
-    <th>Max</th>
-    <th style="text-align: left;">Comments</th>
+    <th colspan="3" style="text-align: center; font-size: 20px; padding: 10px; background-color: #f3f3f3;">
+            <h3>Student Report Card - <span id="schoolYear">2024/2025</span></h3>
+    </th>
+  </tr>
+  <!-- Table column headers -->
+  <tr>
+    <th style="text-align: center;">Subject</th>
+    <th style="text-align: center;">Grade</th>
+    <th style="text-align: center;">Comments</th>
   </tr>
 </thead>
 
-<tbody id="reportBody"></tbody>
 
-      <tbody id="reportBody"></tbody>
+
+<tbody id="reportBody"></tbody>
     </table>
 
-    <div style="margin-top: 20px;">
+    <div style="margin-top: 30px;">
       <label><strong>Teacher Comments:</strong></label><br>
-      <textarea id="teacherComments" rows="4" style="width: 100%;"></textarea>
+  
+      <textarea id="teacherComments" rows="8" style="width: 100%;"></textarea>
+<div id="teacherCommentsDisplay" style="
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  display: none;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-top: 10px;
+"></div>
+
+
+
     </div>
 
-    <div style="display: flex; justify-content: space-between; margin-top: 30px;">
-      <p>Teacher's Signature: ______________________</p>
-      <p>Principal's Signature: ______________________</p>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+  <p>Teacher's Signature: ______________________</p>
+  <p style="display: flex; align-items: center;">
+    Principal's Signature:
+    <img src="uploads/principal_signature.png" alt="Principal Signature" style="max-height: 100px; margin-left: 20px;">
+  </p>
+</div>
+
     </div>
 
     <button onclick="exportToPDF()">Save Current Student</button>
@@ -394,14 +474,17 @@ function loadReportCard() {
       getSubjectArray(data).forEach(subject => {
         const row = document.createElement("tr");
         row.innerHTML = `
-  <td style="text-align: left;">${subject.name}</td>
-  <td>${subject.score}</td>
-  <td>${subject.max}</td>
-  <td style="text-align: left;">${subject.comment}</td>`;
-
-
+          <td style="text-align: left;">${subject.name}</td>
+          <td style="text-align: center;"><strong>${subject.letter}</strong></td>
+          <td colspan="2" style="text-align: left;">${subject.comment}</td>`;
         reportBody.appendChild(row);
       });
+
+      // Only generate a random teacher comment if the textarea is empty
+      const commentBox = document.getElementById("teacherComments");
+      if (!commentBox.value.trim()) {
+        generateTeacherComment();
+      }
     })
     .catch(err => {
       console.error("Error loading report:", err);
@@ -409,83 +492,93 @@ function loadReportCard() {
     });
 }
 
+
 function getSubjectArray(data) {
   function clean(val) {
     return val !== null && val !== undefined && !isNaN(val) ? Math.round(val) : "N/A";
   }
 
-  function comment(score, subject) {
-    if (score === "N/A") return "No data available for this subject.";
-    if (score >= 90) return `MashaAllah! Excellent achievement in ${subject}. Keep it up! 🌟`;
-    if (score >= 75) return `Alhamdulillah, good effort in ${subject}. Strive for even better! 👍`;
-    if (score >= 60) return `You’re doing okay in ${subject}. InshaAllah with more focus you’ll improve.`;
-    return `Needs more attention and consistency in ${subject}. May Allah guide and help you. 🤲`;
+  function letterGrade(score) {
+    if (score === "N/A") return "N/A";
+    if (score >= 86) return "A";
+    if (score >= 73) return "B";
+    if (score >= 67) return "C+";
+    if (score >= 60) return "C";
+    return "C-";
   }
 
-  return [
-    {
-      name: "Quran Recitation",
-      score: clean(data.quran?.recitation_score),
-      max: 100,
-      comment: comment(clean(data.quran?.recitation_score), "Quran Recitation")
-    },
-    {
-      name: "Surah Memorization",
-      score: clean(data.quran?.memorization_score),
-      max: 100,
-      comment: comment(clean(data.quran?.memorization_score), "Surah Memorization")
-    },
-    {
-      name: "Dua Memorization",
-      score: clean(data.dua?.score),
-      max: 100,
-      comment: comment(clean(data.dua?.score), "Dua Memorization")
-    },
-    {
-      name: "Fiqh",
-      score: clean(data.fiqh?.score),
-      max: 100,
-      comment: comment(clean(data.fiqh?.score), "Fiqh")
-    },
-    {
-      name: "Aqaa’id",
-      score: clean(data.aqaaid?.score),
-      max: 100,
-      comment: comment(clean(data.aqaaid?.score), "Aqaa’id")
-    },
-    {
-      name: "Akhlaaq & Adab",
-      score: clean(data.akhlaaq?.score),
-      max: 100,
-      comment: comment(clean(data.akhlaaq?.score), "Akhlaaq & Adab")
-    },
-    {
-      name: "Ahadeeth",
-      score: clean(data.ahadeeth?.score),
-      max: 100,
-      comment: comment(clean(data.ahadeeth?.score), "Ahadeeth")
-    },
-    {
-      name: "Taareekh",
-      score: clean(data.taareekh?.score),
-      max: 100,
-      comment: comment(clean(data.taareekh?.score), "Taareekh")
-    }
-  ];
+function comment(letter, subject) {
+  if (letter === "N/A") return "No mark available for this subject.";
+
+  const lower = subject.toLowerCase();
+  const isMemorization = lower.includes("memorization") || lower.includes("dua");
+  const isRecitation = lower.includes("recitation");
+
+  switch (letter) {
+    case "A":
+      if (isMemorization) return `MashaAllah! Excellent memorization in ${subject}. 🌟`;
+      if (isRecitation) return `Reads with excellent fluency and confidence in ${subject}. 🌟`;
+      return `MashaAllah! Excellent performance in ${subject}. 🌟`;
+
+    case "B":
+      if (isMemorization) return `Good memorization progress in ${subject}, keep it up. 👍`;
+      if (isRecitation) return `Reads well in ${subject}, with minor improvements needed. 👍`;
+      return `Good performance in ${subject}, keep it up. 👍`;
+
+    case "C+":
+      if (isMemorization) return `Satisfactory memorization in ${subject}, more review will help.`;
+      if (isRecitation) return `Moderate fluency in ${subject}, with room to grow.`;
+      return `Satisfactory in ${subject}, with room to grow.`;
+
+    case "C":
+      if (isMemorization) return `Basic memorization in ${subject}. Continued review is encouraged.`;
+      if (isRecitation) return `Basic fluency in ${subject}. Needs more practice for smoother reading.`;
+      return `Demonstrates a basic understanding of ${subject}. Continued support will help.`;
+
+    case "C-":
+      if (isMemorization) return `Struggling with memorization in ${subject}. Extra practice and support recommended.`;
+      if (isRecitation) return `Fluency is limited in ${subject}. With practice, improvement is possible.`;
+      return `Challenges in ${subject}. Needs support and consistent review to improve.`;
+
+    default:
+      return "";
+  }
+}
 
   return [
-    { name: "Quran Recitation", score: clean(data.quran?.recitation_score), max: 100, comment: comment(clean(data.quran?.recitation_score), "Quran Recitation") },
-    { name: "Surah Memorization", score: clean(data.quran?.memorization_score), max: 100, comment: comment(clean(data.quran?.memorization_score), "Surah Memorization") },
-    { name: "Dua Memorization", score: clean(data.dua?.score), max: 100, comment: comment(clean(data.dua?.score), "Dua Memorization") },
-    { name: "Fiqh", score: clean(data.fiqh?.score), max: 100, comment: comment(clean(data.fiqh?.score), "Fiqh") },
-    { name: "Aqaa’id", score: clean(data.aqaaid?.score), max: 100, comment: comment(clean(data.aqaaid?.score), "Aqaa’id") },
-    { name: "Akhlaaq & Adab", score: clean(data.akhlaaq?.score), max: 100, comment: comment(clean(data.akhlaaq?.score), "Akhlaaq & Adab") },
-    { name: "Ahadeeth", score: clean(data.ahadeeth?.score), max: 100, comment: comment(clean(data.ahadeeth?.score), "Ahadeeth") },
-    { name: "Taareekh", score: clean(data.taareekh?.score), max: 100, comment: comment(clean(data.taareekh?.score), "Taareekh") }
+    { name: "Quran Recitation", letter: letterGrade(clean(data.quran?.recitation_score)), comment: comment(letterGrade(clean(data.quran?.recitation_score)), "Quran Recitation") },
+    { name: "Surah Memorization", letter: letterGrade(clean(data.quran?.memorization_score)), comment: comment(letterGrade(clean(data.quran?.memorization_score)), "Surah Memorization") },
+    { name: "Dua Memorization", letter: letterGrade(clean(data.dua?.score)), comment: comment(letterGrade(clean(data.dua?.score)), "Dua Memorization") },
+    { name: "Fiqh", letter: letterGrade(clean(data.fiqh?.score)), comment: comment(letterGrade(clean(data.fiqh?.score)), "Fiqh") },
+    { name: "Aqaa’id", letter: letterGrade(clean(data.aqaaid?.score)), comment: comment(letterGrade(clean(data.aqaaid?.score)), "Aqaa’id") },
+    { name: "Akhlaaq & Adab", letter: letterGrade(clean(data.akhlaaq?.score)), comment: comment(letterGrade(clean(data.akhlaaq?.score)), "Akhlaaq & Adab") },
+    { name: "Ahadeeth", letter: letterGrade(clean(data.ahadeeth?.score)), comment: comment(letterGrade(clean(data.ahadeeth?.score)), "Ahadeeth") },
+    { name: "Taareekh", letter: letterGrade(clean(data.taareekh?.score)), comment: comment(letterGrade(clean(data.taareekh?.score)), "Taareekh") }
   ];
 }
 
+
+function generateTeacherComment() {
+  const messages = [
+    "It was a pleasure having you as a student this year. Keep shining, and we hope to see you in Summer Madrasah, inshaAllah! 🌸",
+    "Your hard work and bright spirit made this year special. Wishing you a beautiful break — see you in Summer Madrasah, inshaAllah! ☀️",
+    "You brought joy and dedication to every class. May your journey in learning continue! Join us for Summer Madrasah, inshaAllah! 📖"
+  ];
+  const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+  document.getElementById("teacherComments").value = randomMessage;
+}
+
+
 async function exportToPDF() {
+  // Copy comments into the display container
+  const textarea = document.getElementById("teacherComments");
+  const displayDiv = document.getElementById("teacherCommentsDisplay");
+
+  displayDiv.textContent = textarea.value;
+  displayDiv.style.display = "block";
+  textarea.style.display = "none";
+
+  // Clone the report card for clean export
   const reportCard = document.getElementById("reportCard");
   const clone = reportCard.cloneNode(true);
   clone.querySelectorAll("button").forEach(btn => btn.remove());
@@ -496,43 +589,70 @@ async function exportToPDF() {
   wrapper.appendChild(clone);
   document.body.appendChild(wrapper);
 
+  // Allow rendering to finish
+  await new Promise(r => requestAnimationFrame(() => setTimeout(r, 200)));
+
+  // Render the canvas
   const canvas = await html2canvas(clone, { scale: 4, backgroundColor: "#fff" });
   const imgData = canvas.toDataURL("image/png");
-  const pdf = new jspdf.jsPDF("p", "pt", "a4");
 
+  const pdf = new jspdf.jsPDF("p", "pt", "a4");
   const pageWidth = pdf.internal.pageSize.getWidth();
   const imgWidth = pageWidth - 40;
   const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
   pdf.addImage(imgData, "PNG", 20, 20, imgWidth, imgHeight, '', 'FAST');
+
   const name = document.getElementById("studentName").textContent.trim().replace(/\s+/g, "_") || "Report";
   pdf.save(`${name}_Report_Card.pdf`);
 
+  // Reset display
   document.body.removeChild(wrapper);
+  displayDiv.style.display = "none";
+  textarea.style.display = "block";
 }
 
+
 async function exportWholeClass() {
-  const teacherId = isAdmin ? document.getElementById("teacherSelect").value : teacherId;
-  if (!teacherId) return alert("Please select a teacher.");
+  const selectedTeacherId = isAdmin
+    ? document.getElementById("teacherSelect").value
+    : teacherId; // Global teacherId from session
+
+  if (!selectedTeacherId) return alert("Please select a teacher.");
 
   const res = await fetch("fetch_dropdowns.php");
   const data = await res.json();
-  const students = isAdmin ? data.students : data.students.filter(s => s.teacher_id == teacherId);
+  const students = isAdmin
+    ? data.students.filter(s => s.teacher_id == selectedTeacherId)
+    : data.students.filter(s => s.teacher_id == teacherId);
 
   for (const student of students) {
     document.getElementById("studentSelect").value = student.id;
+
     await loadReportCard();
-    await new Promise(r => setTimeout(r, 1000));
+    generateTeacherComment();
+
+    await new Promise(resolve =>
+      requestAnimationFrame(() => setTimeout(resolve, 500))
+    );
+
     await exportToPDF();
   }
 
   alert("✅ All student PDFs saved.");
 }
-
 window.addEventListener("DOMContentLoaded", async () => {
   await checkUserRole();
   await populateDropdowns();
+
+  // Attach event listener after dropdowns are ready
+  const studentDropdown = document.getElementById("studentSelect");
+  studentDropdown.addEventListener("change", async () => {
+    await loadReportCard();
+    generateTeacherComment();
+  });
 });
+
 </script>
 
 </body>

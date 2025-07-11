@@ -2,37 +2,94 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Thaakireen – Parent Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ibn Mas'ood Madrasah – Parent Dashboard</title>
   <style>
+    :root {
+      --main-purple: #6a1b9a;
+      --teal-blue: #007b8a;
+      --soft-bg: #f3f0fb;
+      --bubble: rgba(157, 211, 248, 0.3);
+    }
+
+.background-icons {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.background-icons span {
+  position: absolute;
+  font-size: 24px;
+  opacity: 0.15;
+  transform: rotate(var(--angle));
+  animation: float 25s linear infinite;
+  user-select: none;
+}
+
+@keyframes float {
+  0% { transform: translateY(0) rotate(var(--angle)); }
+  100% { transform: translateY(-150px) rotate(calc(var(--angle) + 45deg)); }
+}
+
+
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f9f7;
+      background: var(--soft-bg);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -50px;
+      width: 200%;
+      height: 100%;
+      background-size: 150px 150px;
+      background-position: 0 0, 75px 75px;
+      z-index: 0;
     }
 
     header {
-      background-color: #387a5f;
+      background-color: var(--main-purple);
       color: white;
       padding: 20px;
       text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    header img {
+      height: 60px;
+      margin-bottom: 10px;
     }
 
     main {
       padding: 30px;
-      max-width: 800px;
+      max-width: 850px;
       margin: auto;
+      position: relative;
+      z-index: 1;
     }
 
     .card {
       background-color: white;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      border-radius: 16px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
       margin-bottom: 25px;
     }
 
     h2, h3, h4 {
-      color: #2e5e4e;
+      color: var(--teal-blue);
     }
 
     ul {
@@ -40,7 +97,17 @@
     }
 
     li {
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    a {
+      color: var(--main-purple);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
     }
 
     button {
@@ -53,10 +120,10 @@
     }
 
     #notice-board {
-      background-color: #fff;
+      background-color: white;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      border-radius: 16px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
     }
 
     textarea {
@@ -65,12 +132,36 @@
       padding: 8px;
       border: 1px solid #ccc;
     }
+
+    footer {
+      text-align: center;
+      padding: 16px;
+      background: var(--main-purple);
+      color: white;
+      margin-top: 50px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      main {
+        padding: 20px;
+      }
+
+      header img {
+        height: 50px;
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="background-icons" id="bgIcons"></div>
+
 
 <header>
-  <h1 id="userGreeting">Welcome to Thaakireen, Parent</h1>
+  <h1 id="userGreeting">Ahlan Wa Sahlan, Parent</h1>
+  <p style="margin-top: 4px;">May Allah bless your child's learning journey 🌙📖</p>
 </header>
 
 <main>
@@ -80,7 +171,6 @@
       <li>Loading...</li>
     </ul>
   </div>
-
 
   <aside id="notice-board">
     <h3>📅 Notice Board</h3>
@@ -104,6 +194,10 @@
   </aside>
 </main>
 
+<footer>
+  &copy; 2024 Ibn Mas'ood Madrasah. All rights reserved.
+</footer>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   // Set greeting
@@ -118,13 +212,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
- const userId = sessionStorage.getItem('userId');
-
-if (!userId) {
-  alert('User ID missing. Please log in again.');
-  window.location.href = 'login.html';
-}
-
+  const userId = sessionStorage.getItem('userId');
+  if (!userId) {
+    alert('User ID missing. Please log in again.');
+    window.location.href = 'login.html';
+  }
 
   // Load children
   fetch('get_parent_students.php?parentId=' + encodeURIComponent(userId))
@@ -135,7 +227,10 @@ if (!userId) {
       if (Array.isArray(data.students) && data.students.length > 0) {
         data.students.forEach(student => {
           const li = document.createElement('li');
-          li.textContent = `${student.firstName} ${student.lastName} — Grade ${student.school_grade}`;
+          const link = document.createElement('a');
+          link.href = `student_progress_report.html?studentId=${student.id}`;
+          link.textContent = `${student.firstName} ${student.lastName} — Grade ${student.school_grade}`;
+          li.appendChild(link);
           list.appendChild(li);
         });
       } else {
@@ -147,7 +242,7 @@ if (!userId) {
       document.getElementById('studentList').innerHTML = '<li>Error loading student data.</li>';
     });
 
-function loadCalendarEvents() {
+  // Load calendar events
   fetch("get_calendar_events.php")
     .then(res => res.json())
     .then(data => {
@@ -164,14 +259,8 @@ function loadCalendarEvents() {
       }
     })
     .catch(() => {
-      const ul = document.getElementById("noticeList");
-      ul.innerHTML = "<li>Error loading events.</li>";
+      document.getElementById("noticeList").innerHTML = "<li>Error loading events.</li>";
     });
-}
-
-  // Load reminders
-  // Load calendar events
-  loadCalendarEvents();
 
   // Load reminders
   fetch("get_reminders.php")
@@ -182,24 +271,35 @@ function loadCalendarEvents() {
       data.reminders.forEach(r => {
         const li = document.createElement("li");
         li.textContent = r;
-
         if (data.isAdmin) {
           const deleteBtn = document.createElement("button");
           deleteBtn.textContent = "🗑️";
-          deleteBtn.style.marginLeft = "10px";
-          deleteBtn.style.backgroundColor = "#e74c3c";
-          deleteBtn.style.color = "white";
-          deleteBtn.style.border = "none";
-          deleteBtn.style.borderRadius = "4px";
-          deleteBtn.style.cursor = "pointer";
           deleteBtn.onclick = () => deleteReminder(r);
           li.appendChild(deleteBtn);
         }
-
         ul.appendChild(li);
       });
     });
 });
+
+function generateBackgroundIcons() {
+  const icons = ['🌙', '📚', '🖊️', '🌟'];
+  const container = document.getElementById('bgIcons');
+
+  for (let i = 0; i < 50; i++) {
+    const icon = document.createElement('span');
+    icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+    icon.style.left = `${Math.random() * 100}%`;
+    icon.style.top = `${Math.random() * 100}%`;
+    icon.style.fontSize = `${20 + Math.random() * 30}px`;
+    icon.style.opacity = 0.1 + Math.random() * 0.2;
+    icon.style.setProperty('--angle', `${Math.random() * 360}deg`);
+    container.appendChild(icon);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", generateBackgroundIcons);
+
 </script>
 
 </body>
